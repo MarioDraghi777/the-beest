@@ -2,7 +2,9 @@ import { useEffect } from 'preact/hooks';
 import { LiveBanner } from './components/LiveBanner';
 import { TabBar } from './components/TabBar';
 import { CatalogPage } from './pages/CatalogPage';
+import { DataPage } from './pages/DataPage';
 import { ExercisePage } from './pages/ExercisePage';
+import { ImportPage } from './pages/ImportPage';
 import { LivePage } from './pages/LivePage';
 import { PlanPage } from './pages/PlanPage';
 import { ProgressPage } from './pages/ProgressPage';
@@ -33,6 +35,8 @@ export function App() {
   if (page === 'scheda' && param) return <WorkoutEditPage id={param} />;
   if (page === 'allenamento') return <LivePage />;
   if (page === 'condiviso' && param) return <SharedPage code={param} />;
+  if (page === 'importa') return <ImportPage />;
+  if (page === 'dati') return <DataPage />;
 
   return (
     <>

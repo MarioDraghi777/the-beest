@@ -28,6 +28,7 @@ import {
   EQUIPMENT_IT,
   NAME_ALIASES,
   NAME_FIXES,
+  CANONICAL,
   DUPLICATE_SUFFIX,
 } from './dictionary.mjs';
 
@@ -144,6 +145,21 @@ function main() {
     muscles: facet('mg', MUSCLE_IT, (x) => [...new Set([x.tg, x.mg, ...x.sm])]),
   };
 
+  // Traduzioni canoniche: il termine italiano -> l'esercizio preciso.
+  // Servono all'import, dove bisogna decidere invece che proporre.
+  const canonical = {};
+  const byId = new Map(catalog.map((x) => [x.id, x]));
+  const missing = [];
+  for (const [term, id] of Object.entries(CANONICAL)) {
+    if (!byId.has(id)) missing.push(`${term} -> ${id}`);
+    else canonical[normalize(term)] = id;
+  }
+  if (missing.length) {
+    console.error('Traduzioni canoniche che puntano a id inesistenti:');
+    for (const m of missing) console.error('  -', m);
+    process.exit(1);
+  }
+
   const meta = {
     generatedAt: new Date().toISOString(),
     count: catalog.length,
@@ -162,10 +178,12 @@ function main() {
   console.log('\nScritti in public/data:');
   write('catalog.json', catalog);
   write('taxonomy.json', taxonomy);
+  write('canonical.json', canonical);
   write('meta.json', meta);
 
   console.log(`\n${catalog.length} esercizi · ${taxonomy.bodyParts.length} parti del corpo · ` +
     `${taxonomy.equipment.length} attrezzi · ${taxonomy.muscles.length} muscoli`);
+  console.log(`Traduzioni canoniche: ${Object.keys(canonical).length}`);
   console.log(`Nomi disambiguati: ${needsSuffix.size} · ${[...needsSuffix].sort().join(', ')}`);
 }
 

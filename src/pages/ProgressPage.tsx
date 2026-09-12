@@ -7,6 +7,7 @@ import {
   formatDateShort,
   sessionVolume,
 } from '../services/sessionMath';
+import { navigate } from '../router';
 import { deleteSession, sessions, sessionsLoaded } from '../stores/session';
 import type { Session } from '../types';
 
@@ -84,6 +85,10 @@ export function ProgressPage() {
           </button>
         ))}
       </div>
+
+      <button class="btn btn-ghost" type="button" onClick={() => navigate('dati')}>
+        Backup ed esportazione
+      </button>
 
       {open && (
         <Sheet title={open.name} onClose={() => setOpen(null)}>

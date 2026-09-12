@@ -30,6 +30,9 @@ export function WorkoutsPage() {
       <button class="btn" type="button" onClick={() => void nuova()}>
         Nuova scheda
       </button>
+      <button class="btn btn-ghost" type="button" onClick={() => navigate('importa')}>
+        Importa da testo, file o foto
+      </button>
 
       {!workoutsLoaded.value && <p class="empty">Carico…</p>}
 
@@ -40,7 +43,7 @@ export function WorkoutsPage() {
             Crea una scheda vuota e riempila con gli esercizi del catalogo, oppure aggiungi i tuoi.
           </p>
           <p class="sub" style={{ margin: '8px 0 0' }}>
-            L'import da testo, foto o file arriva nel prossimo passo.
+            Oppure importane una: incolla il testo che ti ha mandato l'allenatore, o fotografala.
           </p>
         </div>
       )}

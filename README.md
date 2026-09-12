@@ -30,10 +30,11 @@ servono e peserebbero più di quello che risolvono.
 npm install
 
 npm run dev        # sviluppo su http://localhost:5173
+npm run dev:phone  # https sulla rete locale, per provare dall'iPhone
 npm run build      # build di produzione (verifica i dati, poi compila)
 npm run preview    # prova il build
 
-npm test           # 18 test su catalogo, ricerca e filtri
+npm test           # 158 test su dati, ricerca, calendario, import e condivisione
 
 npm run ingest     # dataset grezzo -> public/data (serve il dataset)
 npm run verify     # controlli di integrità sui dati generati
@@ -52,6 +53,7 @@ build in CI non ha bisogno del dataset:
 
 - `catalog.json` — 1.324 esercizi in formato compatto, solo italiano
 - `taxonomy.json` — filtri con etichetta italiana e conteggi
+- `canonical.json` — termine italiano → esercizio preciso, per l'import
 - `meta.json` — provenienza e attribuzione
 
 Cosa succede in ingestion, e perché:
@@ -87,6 +89,22 @@ d'ambiente, non di codice. L'attribuzione è visibile ovunque compaiano.
 
 In sviluppo, Vite serve `media-build/` su `/media-local` (vedi
 `.env.development`): si lavora con i media veri senza pubblicarli.
+
+## Import
+
+Testo incollato, CSV, JSON e foto. Il parser del testo legge i formati che si
+usano davvero (`Panca piana 4x8 60kg rec 90"`, `3 x 10 @ 80`, `4xmax`,
+`3x30s`), e i nomi vengono riconosciuti su tre livelli: traduzione canonica
+scritta a mano per i termini più usati (`panca piana` È quella col bilanciere,
+e lo decide una tabella, non un punteggio), nome inglese identico, punteggio
+per token con tolleranza ai refusi. Quello che resta incerto passa per una
+riga di conferma con i tre candidati migliori — un esercizio sbagliato non
+entra mai in scheda di nascosto.
+
+L'OCR delle foto è opzionale e sta dietro un bottone: Tesseract pesa una
+quindicina di megabyte scaricati da CDN al primo uso, e su una scheda scritta
+a penna resta meno affidabile della trascrizione a mano. Il percorso
+principale è fotografare e ricopiare i nomi, che il matcher completa.
 
 ## Promemoria degli allenamenti
 

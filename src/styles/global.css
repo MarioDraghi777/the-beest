@@ -1267,3 +1267,21 @@ select.cell-input {
   opacity: 0.35;
   cursor: default;
 }
+
+/* ---------------------------------------------------------------- import */
+.review-card.pending {
+  border-color: var(--honey);
+}
+
+.photo-preview {
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--hive);
+}
+
+label.btn {
+  display: flex;
+}

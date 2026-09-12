@@ -5,14 +5,14 @@ import { signal } from '@preact/signals';
  * senza librerie, e rende condivisibile qualunque schermata.
  */
 
-export type PageName = 'oggi' | 'piano' | 'schede' | 'catalogo' | 'progressi' | 'esercizio' | 'scheda' | 'allenamento' | 'condiviso';
+export type PageName = 'oggi' | 'piano' | 'schede' | 'catalogo' | 'progressi' | 'esercizio' | 'scheda' | 'allenamento' | 'condiviso' | 'importa' | 'dati';
 
 export interface Route {
   page: PageName;
   param?: string;
 }
 
-const VALID: PageName[] = ['oggi', 'piano', 'schede', 'catalogo', 'progressi', 'esercizio', 'scheda', 'allenamento', 'condiviso'];
+const VALID: PageName[] = ['oggi', 'piano', 'schede', 'catalogo', 'progressi', 'esercizio', 'scheda', 'allenamento', 'condiviso', 'importa', 'dati'];
 
 function parseHash(): Route {
   const raw = location.hash.replace(/^#\/?/, '');

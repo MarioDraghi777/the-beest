@@ -11,6 +11,8 @@ import { matchesAll, relevance, tokenize } from './search';
 export const exercises = signal<Exercise[]>([]);
 export const taxonomy = signal<Taxonomy | null>(null);
 export const meta = signal<CatalogMeta | null>(null);
+/** Termine italiano -> id dell'esercizio preciso. Usato dall'import. */
+export const canonical = signal<Record<string, string>>({});
 export const catalogState = signal<'idle' | 'loading' | 'ready' | 'error'>('idle');
 export const catalogError = signal<string>('');
 
@@ -37,16 +39,18 @@ export async function loadCatalog(): Promise<void> {
   catalogState.value = 'loading';
   try {
     const base = import.meta.env.BASE_URL;
-    const [cat, tax, met] = await Promise.all([
+    const [cat, tax, met, can] = await Promise.all([
       fetch(`${base}data/catalog.json`).then((r) => r.json() as Promise<Exercise[]>),
       fetch(`${base}data/taxonomy.json`).then((r) => r.json() as Promise<Taxonomy>),
       fetch(`${base}data/meta.json`).then((r) => r.json() as Promise<CatalogMeta>),
+      fetch(`${base}data/canonical.json`).then((r) => r.json() as Promise<Record<string, string>>),
     ]);
     byId.clear();
     for (const e of cat) byId.set(e.id, e);
     exercises.value = cat;
     taxonomy.value = tax;
     meta.value = met;
+    canonical.value = can;
     catalogState.value = 'ready';
   } catch (err) {
     catalogError.value = err instanceof Error ? err.message : String(err);
