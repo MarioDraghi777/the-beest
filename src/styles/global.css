@@ -1285,3 +1285,105 @@ select.cell-input {
 label.btn {
   display: flex;
 }
+
+/* ------------------------------------------------------ primo avvio e install */
+.onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--ink);
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+}
+
+.onboarding-inner {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.onboarding-inner .card,
+.onboarding-inner .btn {
+  text-align: left;
+}
+
+.onboarding-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+  font-size: 14.5px;
+  line-height: 1.45;
+  width: 100%;
+}
+
+.onboarding-list li {
+  padding-left: 22px;
+  position: relative;
+}
+
+/* pallino esagonale: il modulo dell'identità anche negli elenchi */
+.onboarding-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 10px;
+  height: 11px;
+  background: var(--honey);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+.install-card {
+  border-color: var(--honey);
+  width: 100%;
+}
+
+.install-steps {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.install-steps li::marker {
+  color: var(--honey);
+  font-family: var(--font-data);
+  font-size: 12px;
+}
+
+.ios-share {
+  width: 17px;
+  height: 17px;
+  vertical-align: -4px;
+  margin: 0 3px;
+  color: var(--honey);
+}
+
+/* ---------------------------------------------------------------- grafico */
+.chart {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.chart-label {
+  font-family: var(--font-data);
+  font-size: 9px;
+  fill: var(--drone);
+}

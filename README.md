@@ -34,7 +34,7 @@ npm run dev:phone  # https sulla rete locale, per provare dall'iPhone
 npm run build      # build di produzione (verifica i dati, poi compila)
 npm run preview    # prova il build
 
-npm test           # 158 test su dati, ricerca, calendario, import e condivisione
+npm test           # 176 test su dati, ricerca, calendario, import e condivisione
 
 npm run ingest     # dataset grezzo -> public/data (serve il dataset)
 npm run verify     # controlli di integrità sui dati generati
@@ -123,9 +123,13 @@ all'apertura), sonori: iOS non concede la vibrazione al web.
 
 Safari cancella i dati dei siti non aperti da 7 giorni. Una PWA aggiunta alla
 schermata Home ne è esente, ed è anche l'unico modo di avere schermo intero e
-Wake Lock. Per questo l'app insiste sull'installazione al primo avvio e
-propone il backup a fine blocco: senza account non c'è nessun recupero dati
-lato server, il backup è l'unica rete.
+Wake Lock. Per questo il primo avvio spiega come installarla, con le
+istruzioni giuste per il telefono che si ha in mano: dove il browser offre
+l'evento `beforeinstallprompt` c'è un vero bottone, su iOS Safari si spiega a
+parole dov'è il pulsante Condividi, e chi è già in standalone non vede niente.
+
+Il backup è l'altra metà: senza account non c'è nessun recupero lato server,
+quindi sta in evidenza nella pagina «I tuoi dati» e non in fondo a un menu.
 
 ## Licenze
 

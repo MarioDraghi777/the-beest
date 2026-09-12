@@ -1,5 +1,7 @@
-import { useState } from 'preact/hooks';
+import { useMemo, useState } from 'preact/hooks';
+import { LineChart } from '../components/LineChart';
 import { Sheet } from '../components/Sheet';
+import { navigate } from '../router';
 import {
   bestSet,
   countDoneSets,
@@ -7,9 +9,17 @@ import {
   formatDateShort,
   sessionVolume,
 } from '../services/sessionMath';
-import { navigate } from '../router';
+import { progressionFor, summarize, trainedExercises } from '../services/progression';
 import { deleteSession, sessions, sessionsLoaded } from '../stores/session';
-import type { Session } from '../types';
+import type { ExerciseRef, Session } from '../types';
+
+type Metric = 'weight' | 'volume' | 'estimated1RM';
+
+const METRICHE: { key: Metric; label: string; unit: string }[] = [
+  { key: 'weight', label: 'Carico', unit: 'kg' },
+  { key: 'volume', label: 'Volume', unit: 'kg' },
+  { key: 'estimated1RM', label: 'Massimale stimato', unit: 'kg' },
+];
 
 function duration(session: Session): string {
   if (!session.endedAt) return '—';
@@ -19,12 +29,18 @@ function duration(session: Session): string {
 export function ProgressPage() {
   const list = sessions.value;
   const [open, setOpen] = useState<Session | null>(null);
+  const [chosen, setChosen] = useState<ExerciseRef | null>(null);
+  const [metric, setMetric] = useState<Metric>('weight');
+
+  const trained = useMemo(() => trainedExercises(list), [list]);
+  const current = chosen ?? trained[0]?.ref ?? null;
+  const points = useMemo(() => (current ? progressionFor(list, current) : []), [list, current]);
+  const summary = summarize(points);
+  const currentName = trained.find((t) => t.ref.type === current?.type && t.ref.id === current?.id)?.name;
 
   const totalVolume = list.reduce((s, x) => s + sessionVolume(x), 0);
-  const thisWeek = list.filter((s) => {
-    const days = (Date.now() - s.startedAt) / 86400000;
-    return days <= 7;
-  });
+  const thisWeek = list.filter((s) => (Date.now() - s.startedAt) / 86400000 <= 7);
+  const unit = METRICHE.find((m) => m.key === metric)!.unit;
 
   return (
     <main class="page">
@@ -57,6 +73,86 @@ export function ProgressPage() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------ progressione */}
+      {trained.length > 0 && current && (
+        <div class="card">
+          <span class="eyebrow" style={{ color: 'var(--honey)' }}>
+            Progressione
+          </span>
+
+          <div class="chips" style={{ marginTop: '10px' }} role="group" aria-label="Scegli l'esercizio">
+            {trained.slice(0, 12).map((t) => (
+              <button
+                key={`${t.ref.type}:${t.ref.id}`}
+                type="button"
+                class="chip"
+                aria-pressed={t.ref.id === current.id && t.ref.type === current.type}
+                onClick={() => setChosen(t.ref)}
+              >
+                {t.name.length > 26 ? `${t.name.slice(0, 24)}…` : t.name}
+                <span class="sub" style={{ marginLeft: '6px' }}>
+                  {t.sessions}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div class="chips" style={{ marginTop: '8px' }} role="group" aria-label="Che cosa guardare">
+            {METRICHE.map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                class="chip"
+                aria-pressed={metric === m.key}
+                onClick={() => setMetric(m.key)}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+
+          <div style={{ marginTop: '12px' }}>
+            <LineChart points={points.map((p) => ({ date: p.date, value: p[metric] }))} unit={unit} />
+          </div>
+
+          {summary && (
+            <>
+              <div class="row" style={{ marginTop: '6px' }}>
+                <div style={{ flex: 1 }}>
+                  <div class="sub">Adesso</div>
+                  <div class="num" style={{ fontSize: '19px' }}>
+                    {summary.last.weight} kg × {summary.last.reps}
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div class="sub">Migliore</div>
+                  <div class="num" style={{ fontSize: '19px' }}>
+                    {summary.best.weight} kg
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div class="sub">Dall'inizio</div>
+                  <div
+                    class="num"
+                    style={{
+                      fontSize: '19px',
+                      color: summary.deltaWeight > 0 ? 'var(--go)' : summary.deltaWeight < 0 ? 'var(--stop)' : undefined,
+                    }}
+                  >
+                    {summary.deltaWeight > 0 ? '+' : ''}
+                    {summary.deltaWeight} kg
+                  </div>
+                </div>
+              </div>
+              <p class="sub" style={{ marginTop: '8px' }}>
+                {currentName} · {points.length} sessioni, dal {formatDateShort(summary.first.date)}
+                {metric === 'estimated1RM' && ' · il massimale è una stima dalla serie migliore, non un test'}
+              </p>
+            </>
+          )}
         </div>
       )}
 
@@ -106,9 +202,7 @@ export function ProgressPage() {
                   <span class="sub num">
                     {doneSets.length === 0
                       ? 'non fatto'
-                      : doneSets
-                          .map((l) => `${l.reps}${l.weight != null ? `×${l.weight}` : ''}`)
-                          .join('  ·  ')}
+                      : doneSets.map((l) => `${l.reps}${l.weight != null ? `×${l.weight}` : ''}`).join('  ·  ')}
                     {best?.weight != null && doneSets.length > 1 && `   (max ${best.weight} kg)`}
                   </span>
                 </div>

@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
+import { InstallCard } from '../components/InstallCard';
+import { InviteApp } from '../components/InviteApp';
 import { goBack, navigate } from '../router';
 import { backupStats, exportBackup, exportHistoryCsv, isBackup, restoreBackup } from '../services/backup';
 import { formatDateLong } from '../services/sessionMath';
@@ -77,6 +79,8 @@ export function DataPage() {
         )}
       </div>
 
+      <InstallCard />
+
       <div class="card">
         <span class="eyebrow">Perché conta</span>
         <p style={{ margin: '10px 0 0', fontSize: '14.5px' }}>
@@ -121,6 +125,8 @@ export function DataPage() {
       <button class="btn btn-ghost" type="button" onClick={() => navigate('importa')}>
         Importa una scheda
       </button>
+
+      <InviteApp />
 
       <div class="card">
         <span class="eyebrow">Da dove vengono gli esercizi</span>

@@ -1,5 +1,6 @@
 import { useEffect } from 'preact/hooks';
 import { LiveBanner } from './components/LiveBanner';
+import { Onboarding, loadOnboarding } from './components/Onboarding';
 import { TabBar } from './components/TabBar';
 import { CatalogPage } from './pages/CatalogPage';
 import { DataPage } from './pages/DataPage';
@@ -14,6 +15,7 @@ import { WorkoutEditPage } from './pages/WorkoutEditPage';
 import { WorkoutsPage } from './pages/WorkoutsPage';
 import { route } from './router';
 import { loadCatalog } from './services/catalog';
+import { watchInstallPrompt } from './services/install';
 import { loadFavorites } from './stores/favorites';
 import { loadPlans } from './stores/plan';
 import { loadSessions } from './stores/session';
@@ -23,12 +25,17 @@ export function App() {
   useEffect(() => {
     void loadCatalog();
     void loadFavorites();
+    void loadOnboarding();
+    watchInstallPrompt();
     // Le sessioni servono anche per precompilare i carichi dell'ultima volta,
     // quindi si caricano dopo le schede ma sempre all'avvio.
     void loadWorkouts().then(() => Promise.all([loadSessions(), loadPlans()]));
   }, []);
 
   const { page, param } = route.value;
+
+  // Chi arriva da un link condiviso vuole vedere la scheda, non il benvenuto.
+  const benvenuto = page !== 'condiviso' ? <Onboarding /> : null;
 
   // Schermate piene, senza tab bar: si esce con la freccia o con l'indietro.
   if (page === 'esercizio' && param) return <ExercisePage id={param} />;
@@ -47,6 +54,7 @@ export function App() {
       {page === 'piano' && <PlanPage />}
       <LiveBanner />
       <TabBar />
+      {benvenuto}
     </>
   );
 }
