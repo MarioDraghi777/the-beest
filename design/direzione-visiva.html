@@ -1,0 +1,894 @@
+<title>The Beest</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  /* ============================================================
+     TOKEN DI PAGINA (questa presentazione) — dark-first
+     ============================================================ */
+  :root {
+    --page-bg: #0B0A07;
+    --page-panel: #14120C;
+    --page-line: rgba(247, 241, 225, 0.12);
+    --page-ink: #F7F1E1;
+    --page-ink-2: #A79C88;
+    --page-accent: #FFC000;
+    --page-accent-ink: #0B0A07;
+    --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+
+    /* ---- TOKEN DI PRODOTTO: sempre questi, in ogni tema host ----
+       L'app e' dark-first per scelta (palestra, luce dura, schermo
+       sporco di magnesite). I mockup li mostrano cosi' come sono. */
+    --ink: #0B0A07;         /* nero caldo, base dell'app */
+    --hive: #16140E;        /* superficie */
+    --hive-2: #221E15;      /* superficie sollevata */
+    --honey: #FFC000;       /* accento primario: azione */
+    --nectar: #F08A00;      /* accento profondo: pressed, gradienti */
+    --wax: #F7F1E1;         /* testo principale su scuro */
+    --drone: #93897A;       /* testo secondario */
+    --chill: #4FC3F7;       /* SOLO recupero: freddo = riposo */
+    --go: #45C26B;
+    --stop: #FF4A3D;
+
+    --app-radius: 14px;
+    --notch: 18px;          /* taglio dell'angolo: derivato dall'esagono */
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --page-bg: #F7F1E1;
+      --page-panel: #FFFBF0;
+      --page-line: rgba(11, 10, 7, 0.14);
+      --page-ink: #14120B;
+      --page-ink-2: #6B6252;
+      --page-accent: #A85B00;
+      --page-accent-ink: #FFFBF0;
+      --shadow: 0 20px 44px rgba(58, 44, 12, 0.18);
+    }
+  }
+  :root[data-theme="light"] {
+    --page-bg: #F7F1E1;
+    --page-panel: #FFFBF0;
+    --page-line: rgba(11, 10, 7, 0.14);
+    --page-ink: #14120B;
+    --page-ink-2: #6B6252;
+    --page-accent: #A85B00;
+    --page-accent-ink: #FFFBF0;
+    --shadow: 0 20px 44px rgba(58, 44, 12, 0.18);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--page-bg);
+    color: var(--page-ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+    padding-block: 0 72px;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+
+  h1, h2, h3, .display {
+    font-family: Archivo, "Arial Black", system-ui, sans-serif;
+    font-variation-settings: "wdth" 118, "wght" 800;
+    text-wrap: balance;
+    margin: 0;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--page-ink-2);
+  }
+
+  /* ---------------- Testata ---------------- */
+  header.hero {
+    border-bottom: 1px solid var(--page-line);
+    background:
+      radial-gradient(120% 90% at 80% -10%, rgba(255, 192, 0, 0.16), transparent 60%),
+      var(--page-bg);
+  }
+  .hero-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 28px;
+    padding-block: 40px 34px;
+  }
+  .hero-text { flex: 1 1 420px; display: flex; flex-direction: column; gap: 14px; }
+  h1 { font-size: clamp(42px, 9vw, 76px); font-variation-settings: "wdth" 125, "wght" 900; }
+  h1 .thin { font-variation-settings: "wdth" 125, "wght" 400; color: var(--page-ink-2); display: block; font-size: 0.36em; letter-spacing: 0.02em; }
+  .lede { font-size: 17px; color: var(--page-ink-2); max-width: 56ch; }
+
+  .hero-mark { flex: 0 0 auto; }
+
+  /* ---------------- Sezioni ---------------- */
+  section { padding-block: 44px 0; }
+  .sec-head { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .sec-head h2 { font-size: clamp(24px, 4vw, 34px); }
+  .sec-head p { margin: 0; color: var(--page-ink-2); max-width: 68ch; }
+
+  /* ---------------- Palette ---------------- */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 12px; }
+  .sw {
+    border: 1px solid var(--page-line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--page-panel);
+    display: flex;
+    flex-direction: column;
+  }
+  .sw .chip { height: 78px; }
+  .sw .meta { padding: 10px 12px 13px; display: flex; flex-direction: column; gap: 2px; }
+  .sw .name { font-weight: 600; font-size: 14px; }
+  .sw code { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--page-ink-2); }
+  .sw .use { font-size: 12.5px; color: var(--page-ink-2); line-height: 1.45; margin-top: 4px; }
+
+  /* ---------------- Tipografia ---------------- */
+  .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .type-card { border: 1px solid var(--page-line); border-radius: 12px; padding: 18px 18px 20px; background: var(--page-panel); display: flex; flex-direction: column; gap: 10px; }
+  .type-card .sample { color: var(--page-ink); }
+  .s-display { font-family: Archivo, sans-serif; font-variation-settings: "wdth" 125, "wght" 800; font-size: 36px; line-height: 1; }
+  .s-ui { font-size: 19px; font-weight: 500; }
+  .s-mono { font-family: "IBM Plex Mono", monospace; font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .type-card .note { font-size: 13px; color: var(--page-ink-2); }
+
+  /* ---------------- Mockup: telefono ---------------- */
+  .screens { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 26px; align-items: start; }
+  .screen { display: flex; flex-direction: column; gap: 12px; }
+  .screen > .cap { display: flex; flex-direction: column; gap: 4px; }
+  .screen .cap strong { font-family: Archivo, sans-serif; font-variation-settings: "wdth" 118, "wght" 700; font-size: 16px; }
+  .screen .cap span { font-size: 13px; color: var(--page-ink-2); line-height: 1.45; }
+
+  .phone {
+    background: var(--ink);
+    color: var(--wax);
+    border: 1px solid rgba(247, 241, 225, 0.14);
+    border-radius: 26px;
+    padding: 10px 10px 0;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+    overflow: hidden;
+    max-width: 100%;
+  }
+  .phone.light { background: var(--wax); color: #14120B; border-color: rgba(11, 10, 7, 0.16); }
+  .statusbar {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: 0.04em;
+    color: var(--drone); padding: 2px 8px 8px;
+  }
+  .phone.light .statusbar { color: #7A705E; }
+  .scr { display: flex; flex-direction: column; gap: 12px; padding: 4px 8px 0; }
+
+  /* ---- elementi dell'app ---- */
+  .app-h {
+    font-family: Archivo, sans-serif; font-variation-settings: "wdth" 122, "wght" 800;
+    font-size: 26px; line-height: 1.05; letter-spacing: -0.015em;
+  }
+  .app-sub { font-size: 12.5px; color: var(--drone); }
+  .phone.light .app-sub { color: #6B6252; }
+
+  .card {
+    background: var(--hive);
+    border: 1px solid rgba(247, 241, 225, 0.09);
+    border-radius: var(--app-radius);
+    padding: 14px;
+  }
+  .phone.light .card { background: #FFFBF0; border-color: rgba(11, 10, 7, 0.12); }
+
+  /* il taglio d'angolo viene dall'esagono: usato solo sulla card principale */
+  .card.notched {
+    clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
+    border: 0;
+    background: linear-gradient(155deg, var(--hive-2), var(--hive) 70%);
+    position: relative;
+  }
+  .card.hero-card { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 56px; border-radius: 12px; border: 0;
+    font-family: Archivo, sans-serif; font-variation-settings: "wdth" 118, "wght" 800;
+    font-size: 17px; letter-spacing: 0.02em; text-transform: uppercase;
+    background: linear-gradient(180deg, var(--honey), var(--nectar));
+    color: var(--ink); width: 100%;
+  }
+  .btn.ghost {
+    background: transparent; color: var(--wax);
+    border: 1px solid rgba(247, 241, 225, 0.22); min-height: 48px; font-size: 14px;
+  }
+  .phone.light .btn.ghost { color: #14120B; border-color: rgba(11, 10, 7, 0.22); }
+  .btn.huge { min-height: 74px; font-size: 21px; }
+  .btn.rest { background: transparent; border: 2px solid var(--chill); color: var(--chill); }
+
+  .chips { display: flex; gap: 7px; flex-wrap: wrap; }
+  .chip-f {
+    font-size: 12px; padding: 7px 11px; border-radius: 999px;
+    border: 1px solid rgba(247, 241, 225, 0.2); color: var(--drone); white-space: nowrap;
+  }
+  .chip-f.on { background: var(--honey); border-color: var(--honey); color: var(--ink); font-weight: 600; }
+  .phone.light .chip-f { border-color: rgba(11, 10, 7, 0.2); color: #6B6252; }
+
+  /* badge esagonale: muscolo / attrezzo */
+  .hexbadge {
+    width: 46px; height: 52px; flex: 0 0 auto;
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    background: var(--hive-2); color: var(--honey);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.04em; text-align: center;
+  }
+  .hexbadge b { font-size: 13px; font-family: Archivo, sans-serif; font-variation-settings: "wdth" 110, "wght" 800; color: var(--wax); }
+
+  .media {
+    aspect-ratio: 1; border-radius: 10px; background:
+      repeating-conic-gradient(from 30deg, rgba(255,192,0,0.07) 0 60deg, transparent 0 120deg) 0 0/22px 38px,
+      var(--hive-2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 9.5px; color: var(--drone);
+    border: 1px solid rgba(247, 241, 225, 0.08);
+  }
+  .media.sm { width: 54px; }
+
+  .row { display: flex; gap: 11px; align-items: center; }
+  .row .t { flex: 1; min-width: 0; }
+  .row .t b { display: block; font-weight: 600; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .t span { font-size: 11.5px; color: var(--drone); font-family: "IBM Plex Mono", monospace; letter-spacing: 0.02em; }
+
+  .num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  /* barra di stato allenamento: fascia di sicurezza nero/ambra */
+  .hazard {
+    background-image: repeating-linear-gradient(135deg, var(--honey) 0 10px, var(--ink) 10px 20px);
+    height: 6px; border-radius: 3px;
+  }
+  .live-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: var(--hive-2); border-radius: 10px; padding: 9px 12px;
+  }
+  .live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--stop); box-shadow: 0 0 0 4px rgba(255, 74, 61, 0.18); }
+
+  .setgrid { display: flex; flex-direction: column; gap: 6px; }
+  .setrow {
+    display: grid; grid-template-columns: 26px 1fr 1fr 34px; align-items: center; gap: 8px;
+    padding: 9px 10px; border-radius: 9px; background: rgba(247, 241, 225, 0.045);
+    font-family: "IBM Plex Mono", monospace; font-size: 14px; font-variant-numeric: tabular-nums;
+  }
+  .setrow.done { background: rgba(69, 194, 107, 0.14); }
+  .setrow .idx { color: var(--drone); font-size: 11px; }
+  .setrow .tick { text-align: right; color: var(--go); font-weight: 600; }
+  .setrow .pending { text-align: right; color: var(--drone); }
+  .setrow input { all: unset; }
+
+  .timer {
+    font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums;
+    font-size: 46px; font-weight: 600; color: var(--chill); line-height: 1; letter-spacing: -0.02em;
+  }
+
+  .tabbar {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    border-top: 1px solid rgba(247, 241, 225, 0.1);
+    margin: 14px -10px 0; padding: 8px 4px 10px;
+    background: var(--hive);
+  }
+  .phone.light .tabbar { background: #FFFBF0; border-top-color: rgba(11, 10, 7, 0.12); }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 9.5px; color: var(--drone); letter-spacing: 0.03em; }
+  .tab.on { color: var(--honey); }
+  .tab .gl { width: 20px; height: 20px; display: block; }
+
+  /* ---------------- Il Favo: una cella = un giorno ---------------- */
+  .favo { display: flex; flex-direction: column; align-items: center; }
+  .favo-row { display: flex; gap: 2px; margin-top: -5px; }
+  .favo-row:first-child { margin-top: 0; }
+  .favo-row.odd { margin-left: 10px; }
+  .cell {
+    --hex: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    width: 18px; height: 20px; flex: 0 0 auto;
+    clip-path: var(--hex);
+    background: rgba(247, 241, 225, 0.07);
+    display: flex; align-items: center; justify-content: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 7px; color: var(--drone);
+  }
+  /* stati del giorno */
+  .cell.plan { background: rgba(255, 192, 0, 0.2); }                    /* previsto */
+  .cell.done { background: var(--honey); }                              /* fatto */
+  .cell.heavy { background: linear-gradient(160deg, var(--honey), var(--nectar)); } /* volume alto */
+  .cell.skip { background: rgba(255, 74, 61, 0.32); }                   /* previsto e saltato */
+  .ring {
+    display: inline-flex; padding: 2px; flex: 0 0 auto;
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    background: var(--wax);
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 10.5px; color: var(--drone); }
+  .legend i { display: inline-block; width: 11px; height: 12px; margin-right: 4px; vertical-align: -1px;
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+
+  /* piccolo favo del mese, celle grandi e toccabili */
+  .comb-m { display: flex; flex-direction: column; align-items: flex-start; }
+  .comb-m .favo-row { gap: 4px; margin-top: -7px; }
+  .comb-m .favo-row.odd { margin-left: 15px; }
+  .comb-m .cell { width: 28px; height: 32px; font-size: 10px; }
+
+  /* toggle di impostazione */
+  .toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(247, 241, 225, 0.08); }
+  .toggle:last-child { border-bottom: 0; }
+  .toggle .sw-ui { width: 44px; height: 26px; border-radius: 13px; background: rgba(247, 241, 225, 0.16); position: relative; flex: 0 0 auto; }
+  .toggle .sw-ui::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--drone); }
+  .toggle.on .sw-ui { background: var(--honey); }
+  .toggle.on .sw-ui::after { left: 21px; background: var(--ink); }
+
+  .block-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(247, 241, 225, 0.08); }
+  .block-row:last-child { border-bottom: 0; }
+  .block-bar { width: 4px; align-self: stretch; border-radius: 2px; background: var(--honey); }
+  .block-bar.b2 { background: var(--nectar); }
+  .block-bar.b3 { background: #7A6A4A; }
+
+  /* ---------------- Principi ---------------- */
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); gap: 14px; }
+  .rule { border-left: 3px solid var(--page-accent); padding: 2px 0 2px 14px; }
+  .rule h3 { font-size: 15px; font-variation-settings: "wdth" 112, "wght" 700; margin-bottom: 4px; }
+  .rule p { margin: 0; font-size: 13.5px; color: var(--page-ink-2); }
+
+  table.spec { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.spec th, table.spec td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--page-line); vertical-align: top; }
+  table.spec th { font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--page-ink-2); font-weight: 400; }
+  table.spec td:first-child { font-family: "IBM Plex Mono", monospace; white-space: nowrap; }
+  .scroll-x { overflow-x: auto; }
+
+  footer { margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--page-line); color: var(--page-ink-2); font-size: 13px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .live-dot { animation: pulse 1.8s ease-in-out infinite; }
+  }
+  @keyframes pulse { 50% { opacity: 0.35; } }
+</style>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div class="hero-mark">
+      <img src="logo.png" width="168" height="168" alt="The Beest — ape che solleva un manubrio dentro un esagono">
+    </div>
+    <div class="hero-text">
+      <span class="eyebrow">Fase 3 · direzione visiva</span>
+      <h1>The Beest<span class="thin">Lavora come un'ape. Alzati come una bestia.</span></h1>
+      <p class="lede">
+        Identità e sistema di interfaccia per la web app di allenamento: catalogo di 1.324 esercizi,
+        schede, piano annuale, allenamento in corso, promemoria. Otto schermate, i token reali,
+        e i testi presi dal dataset vero — nessun contenuto inventato.
+      </p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Concept</span>
+      <h2>L'alveare e la bestia</h2>
+      <p>
+        Il nome tiene insieme due cose che in palestra servono entrambe: l'ape, cioè la costanza
+        ottusa di chi si presenta anche il martedì di novembre, e la bestia, cioè il carico che alzi
+        quando quella costanza ha fatto il suo lavoro. Da lì viene tutto il resto: <strong>esagono</strong>
+        come modulo strutturale (la settimana è una cella, il mesociclo è un favo che si riempie),
+        <strong>ambra</strong> come unico colore d'azione, <strong>nero caldo</strong> come fondo,
+        e la <strong>fascia zebrata nero-ambra</strong> — metà ape, metà nastro di sicurezza da
+        bilanciere — riservata a una cosa sola: l'allenamento in corso. Il marchio è quello che mi hai
+        dato: la palette dell'app è stata ricalibrata sui suoi colori esatti, ambra
+        <code>#FFC000</code> e nero, così interfaccia e logo non litigano.
+      </p>
+    </div>
+    <div class="rules">
+      <div class="rule">
+        <h3>Buio per scelta, non per moda</h3>
+        <p>Le palestre hanno faretti puntati in faccia e specchi. Fondo nero, testo color cera ad alto contrasto, niente grigi medi sui dati che devi leggere sotto sforzo. Il tema chiaro esiste e segue il sistema.</p>
+      </div>
+      <div class="rule">
+        <h3>Un solo colore che significa "premi"</h3>
+        <p>L'ambra è riservata alle azioni. Se è ambra, si tocca. L'unica eccezione cromatica è il celeste del recupero: caldo = lavoro, freddo = riposo.</p>
+      </div>
+      <div class="rule">
+        <h3>I numeri sono il contenuto</h3>
+        <p>Carichi, ripetizioni, timer in monospaziato con cifre tabulari: colonne allineate, confronto immediato fra serie, nessun salto di larghezza mentre il timer scorre.</p>
+      </div>
+      <div class="rule">
+        <h3>Il favo si riempie da solo</h3>
+        <p>In fondo alla scheda del giorno c'è "Workout completato". Un tap e la cella di oggi si accende: è l'unica ricompensa dell'app, e arriva dal gesto che faresti comunque per chiudere.</p>
+      </div>
+      <div class="rule">
+        <h3>Pollice destro, mano sinistra occupata</h3>
+        <p>Le azioni frequenti stanno nel terzo inferiore dello schermo. Target minimo 48 px, azione primaria 56, "serie fatta" 74: si centra senza guardare, con le mani sudate.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Colore</span>
+      <h2>Palette</h2>
+      <p>Neutri caldi, virati verso l'ambra: il nero non è mai #000 e il grigio non è mai neutro puro. Il chiaro è cera d'api, non bianco.</p>
+    </div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#0B0A07"></div><div class="meta"><span class="name">Ink</span><code>#0B0A07</code><span class="use">Fondo dell'app. Nero caldo, non neutro.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#16140E"></div><div class="meta"><span class="name">Hive</span><code>#16140E</code><span class="use">Superficie delle card.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#221E15"></div><div class="meta"><span class="name">Hive 2</span><code>#221E15</code><span class="use">Superficie sollevata, badge, campi.</span></div></div>
+      <div class="sw"><div class="chip" style="background:linear-gradient(180deg,#FFC000,#F08A00)"></div><div class="meta"><span class="name">Honey → Nectar</span><code>#FFC000 → #F08A00</code><span class="use">Azione primaria. Contrasto 11:1 con Ink.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#F7F1E1"></div><div class="meta"><span class="name">Wax</span><code>#F7F1E1</code><span class="use">Testo su scuro; fondo del tema chiaro.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#93897A"></div><div class="meta"><span class="name">Drone</span><code>#93897A</code><span class="use">Testo secondario. Mai per numeri di carico.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#4FC3F7"></div><div class="meta"><span class="name">Chill</span><code>#4FC3F7</code><span class="use">Solo recupero e timer. Unico colore freddo.</span></div></div>
+      <div class="sw"><div class="chip" style="background:linear-gradient(90deg,#45C26B 50%,#FF4A3D 50%)"></div><div class="meta"><span class="name">Go / Stop</span><code>#45C26B · #FF4A3D</code><span class="use">Serie completata; sessione live, errori.</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Tipografia</span>
+      <h2>Tre ruoli, due famiglie</h2>
+      <p>Archivo in larghezza estesa 125 pesa come un disco da 20 kg e funziona nei titoli corti. IBM Plex Sans tiene i testi lunghi delle istruzioni. IBM Plex Mono è per tutto ciò che è numero o stato. Nell'app sono self-hosted in woff2 sottoinsiemizzato latin (circa 95 KB in tutto): la PWA deve funzionare offline, quindi niente CDN di font.</p>
+    </div>
+    <div class="type-grid">
+      <div class="type-card">
+        <span class="eyebrow">Display · Archivo wdth 125 / wght 800</span>
+        <div class="sample s-display">PANCA PIANA</div>
+        <div class="sample s-display" style="font-size:22px">Upper A · Forza</div>
+        <p class="note">Titoli di schermata, nomi scheda, etichette dei bottoni in maiuscolo. Mai sotto i 16 px e mai per più di tre parole.</p>
+      </div>
+      <div class="type-card">
+        <span class="eyebrow">UI e testo · IBM Plex Sans</span>
+        <div class="sample s-ui">Afferrare il bilanciere con una presa prona leggermente più larga della larghezza delle spalle.</div>
+        <p class="note">Istruzioni step-by-step, note, form. Corpo 15/16 px, interlinea 1.55, misura sotto i 66 caratteri.</p>
+      </div>
+      <div class="type-card">
+        <span class="eyebrow">Dati · IBM Plex Mono tabular</span>
+        <div class="sample s-mono">82.5 kg · 4×8<br>01:30</div>
+        <p class="note">Carichi, ripetizioni, RPE, timer, date. Cifre tabulari obbligatorie: le colonne delle serie devono allinearsi.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Schermate</span>
+      <h2>Sei schermate, a larghezza reale</h2>
+      <p>Mockup statici a 390 px, i contenuti sono esercizi veri del dataset con le loro istruzioni italiane. I riquadri tratteggiati a nido d'ape sono i segnaposto delle animazioni © Gym Visual.</p>
+    </div>
+
+    <div class="screens">
+
+      <!-- 1. OGGI -->
+      <div class="screen">
+        <div class="cap"><strong>1 · Oggi</strong><span>Apri l'app, e la risposta alla domanda "che faccio adesso" è già lì. Un tap per iniziare.</span></div>
+        <div class="phone">
+          <div class="statusbar"><span>9:41</span><span>MER 12 · SETT. 7 / 13</span></div>
+          <div class="scr">
+            <div>
+              <div class="app-h">Oggi</div>
+              <div class="app-sub">Blocco 2 — Ipertrofia · settimana 7</div>
+            </div>
+            <div class="card notched hero-card">
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <div class="hexbadge"><b>A</b>PUSH</div>
+                <div style="flex:1">
+                  <div class="app-h" style="font-size:21px">Upper A — Spinta</div>
+                  <div class="app-sub">5 esercizi · 18 serie · ~52 min</div>
+                </div>
+              </div>
+              <div class="setgrid">
+                <div class="setrow" style="grid-template-columns:1fr auto"><span style="font-family:'IBM Plex Sans';font-size:13.5px">barbell bench press</span><span>4×8 · 82.5</span></div>
+                <div class="setrow" style="grid-template-columns:1fr auto"><span style="font-family:'IBM Plex Sans';font-size:13.5px">barbell seated overhead press</span><span>4×10 · 40</span></div>
+                <div class="setrow" style="grid-template-columns:1fr auto;color:var(--drone)"><span style="font-family:'IBM Plex Sans';font-size:13.5px">+ altri 3 esercizi</span><span>10 serie</span></div>
+              </div>
+              <button class="btn huge">Inizia allenamento</button>
+            </div>
+            <div class="row" style="gap:8px">
+              <button class="btn ghost">Cambia scheda</button>
+              <button class="btn ghost">Salta oggi</button>
+            </div>
+            <div class="card">
+              <div class="app-sub" style="margin-bottom:8px">Ultimo: <span class="num">lun 10</span> — Lower B</div>
+              <div class="row">
+                <div style="flex:1"><div class="app-sub">Volume settimana</div><div class="num" style="font-size:19px">14.240 kg</div></div>
+                <div style="flex:1"><div class="app-sub">Serie fatte</div><div class="num" style="font-size:19px">32 / 54</div></div>
+              </div>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <span class="tab on"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 20 8v8l-8 5-8-5V8z"/></svg>Oggi</span>
+            <span class="tab"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Piano</span>
+            <span class="tab"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16l-7-4-7 4z"/></svg>Schede</span>
+            <span class="tab"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>Catalogo</span>
+            <span class="tab"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18V9M10 18V5M16 18v-6M22 18h-20"/></svg>Progressi</span>
+          </nav>
+        </div>
+      </div>
+
+      <!-- 2. ALLENAMENTO IN CORSO -->
+      <div class="screen">
+        <div class="cap"><strong>2 · Allenamento in corso</strong><span>La schermata che conta. Zero navigazione: un bottone enorme in fondo, il resto è lettura. Schermo tenuto acceso con Wake Lock, suono a fine recupero — su iPhone il web non può vibrare.</span></div>
+        <div class="phone">
+          <div class="statusbar"><span>18:22</span><span>WAKE LOCK ON</span></div>
+          <div class="scr">
+            <div class="hazard"></div>
+            <div class="live-bar">
+              <span style="display:flex;align-items:center;gap:8px"><i class="live-dot"></i><span class="num" style="font-size:13px">00:24:17</span></span>
+              <span class="app-sub num">esercizio 2 / 5</span>
+            </div>
+            <div class="row">
+              <div class="media sm">GIF</div>
+              <div class="t">
+                <div class="app-h" style="font-size:19px">barbell bench press</div>
+                <div class="app-sub">bilanciere · pettorali · 4 serie × 8</div>
+              </div>
+            </div>
+            <div class="setgrid">
+              <div class="setrow done"><span class="idx">1</span><span>8 rip</span><span>82.5 kg</span><span class="tick">✓</span></div>
+              <div class="setrow done"><span class="idx">2</span><span>8 rip</span><span>82.5 kg</span><span class="tick">✓</span></div>
+              <div class="setrow" style="background:rgba(255,192,0,0.14);outline:1px solid var(--honey)"><span class="idx" style="color:var(--honey)">3</span><span>8 rip</span><span>82.5 kg</span><span class="pending" style="color:var(--honey)">▸</span></div>
+              <div class="setrow"><span class="idx">4</span><span>8 rip</span><span>82.5 kg</span><span class="pending">–</span></div>
+            </div>
+            <div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px">
+              <div>
+                <div class="app-sub">Recupero</div>
+                <div class="timer">01:22</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;width:104px">
+                <button class="btn ghost" style="min-height:38px;font-size:12px">+30s</button>
+                <button class="btn ghost" style="min-height:38px;font-size:12px">Salta</button>
+              </div>
+            </div>
+            <button class="btn huge" style="margin-bottom:10px">Serie 3 fatta</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. CATALOGO -->
+      <div class="screen">
+        <div class="cap"><strong>3 · Catalogo</strong><span>1.324 esercizi, lista virtualizzata. Nomi in inglese come da dataset, ma la ricerca capisce l'italiano tramite alias; filtri e tassonomie tradotti.</span></div>
+        <div class="phone">
+          <div class="statusbar"><span>9:41</span><span>OFFLINE · CATALOGO OK</span></div>
+          <div class="scr">
+            <div class="app-h">Catalogo</div>
+            <div class="card" style="padding:12px 14px;display:flex;align-items:center;gap:10px">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#93897A" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              <span style="color:var(--wax)">panca<span style="color:var(--drone)">│</span></span>
+            </div>
+            <div class="chips">
+              <span class="chip-f on">Petto</span>
+              <span class="chip-f">Bilanciere</span>
+              <span class="chip-f">Corpo libero</span>
+              <span class="chip-f">Manubri</span>
+              <span class="chip-f">Cavi</span>
+            </div>
+            <div class="app-sub num">18 risultati · “panca” → bench</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="card row"><div class="media sm">GIF</div><div class="t"><b>barbell bench press</b><span>BILANCIERE · PETTORALI</span></div><span style="color:var(--honey);font-size:22px">+</span></div>
+              <div class="card row"><div class="media sm">GIF</div><div class="t"><b>dumbbell bench press</b><span>MANUBRI · PETTORALI</span></div><span style="color:var(--honey);font-size:22px">+</span></div>
+              <div class="card row"><div class="media sm">GIF</div><div class="t"><b>barbell incline bench press</b><span>BILANCIERE · PETTORALI</span></div><span style="color:var(--honey);font-size:22px">+</span></div>
+              <div class="card row"><div class="media sm">GIF</div><div class="t"><b>smith bench press</b><span>MULTIPOWER · PETTORALI</span></div><span style="color:var(--honey);font-size:22px">+</span></div>
+            </div>
+          </div>
+          <nav class="tabbar">
+            <span class="tab"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 20 8v8l-8 5-8-5V8z"/></svg>Oggi</span>
+            <span class="tab"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Piano</span>
+            <span class="tab"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16l-7-4-7 4z"/></svg>Schede</span>
+            <span class="tab on"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>Catalogo</span>
+            <span class="tab"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18V9M10 18V5M16 18v-6M22 18h-20"/></svg>Progressi</span>
+          </nav>
+        </div>
+      </div>
+
+      <!-- 4. DETTAGLIO ESERCIZIO -->
+      <div class="screen">
+        <div class="cap"><strong>4 · Dettaglio esercizio</strong><span>L'animazione è grande e sta in alto, i badge esagonali danno muscolo e attrezzo a colpo d'occhio, le istruzioni italiane arrivano dal dataset senza ritocchi.</span></div>
+        <div class="phone">
+          <div class="statusbar"><span>9:41</span><span>0025</span></div>
+          <div class="scr">
+            <div class="media" style="max-width:200px;margin:0 auto">180×180 · WEBP ANIMATO</div>
+            <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--drone)">© GYM VISUAL — GYMVISUAL.COM</div>
+            <div>
+              <div class="app-h" style="font-size:23px">barbell bench press</div>
+              <div class="app-sub">Petto · spinta orizzontale</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <div class="hexbadge"><b>PET</b>TARGET</div>
+              <div class="hexbadge"><b>TRI</b>SEC.</div>
+              <div class="hexbadge"><b>SPA</b>SEC.</div>
+              <div class="hexbadge" style="color:var(--drone)"><b>BIL</b>ATTREZZO</div>
+            </div>
+            <div class="card">
+              <span class="eyebrow" style="color:var(--honey)">Esecuzione</span>
+              <ol style="margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:9px;font-size:14px;line-height:1.5">
+                <li>Sdraiati su una panca con i piedi appoggiati a terra e la schiena premuta contro la panca.</li>
+                <li>Afferrare il bilanciere con una presa prona leggermente più larga della larghezza delle spalle.</li>
+                <li style="color:var(--drone)">Altri 3 passaggi…</li>
+              </ol>
+            </div>
+            <div class="row" style="gap:8px;padding-bottom:10px">
+              <button class="btn" style="min-height:50px;font-size:15px">Aggiungi a scheda</button>
+              <button class="btn ghost" style="width:58px;min-height:50px">★</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. PIANO ANNUALE -->
+      <div class="screen">
+        <div class="cap"><strong>5 · Il Favo</strong><span>Il calendario dell'anno: <strong>una cella = un giorno</strong>. Si accende ambra quando chiudi l'allenamento, resta in ambra pallido se era previsto e non l'hai ancora fatto, diventa rossa se l'hai saltato. 365 giorni in una schermata sola.</span></div>
+        <div class="phone">
+          <div class="statusbar"><span>9:41</span><span>2026</span></div>
+          <div class="scr">
+            <div>
+              <div class="app-h">Stagione 2026</div>
+              <div class="app-sub">Iniziata il 5 gen · 52 settimane · 4 blocchi</div>
+            </div>
+            <div class="card" style="display:flex;gap:0;padding:12px">
+              <div style="flex:1"><div class="app-sub">Serie aperta</div><div class="num" style="font-size:20px;color:var(--honey)">6 sett.</div></div>
+              <div style="flex:1"><div class="app-sub">Sessioni</div><div class="num" style="font-size:20px">71</div></div>
+              <div style="flex:1"><div class="app-sub">Aderenza</div><div class="num" style="font-size:20px;color:var(--go)">89%</div></div>
+            </div>
+            <div class="card">
+              <span class="eyebrow" style="color:var(--honey)">Il favo · 2026</span>
+              <div class="favo" id="favo" style="margin-top:12px"></div>
+              <div class="legend">
+                <span><i style="background:var(--honey)"></i>fatto</span>
+                <span><i style="background:rgba(255,192,0,.2)"></i>previsto</span>
+                <span><i style="background:rgba(255,74,61,.32)"></i>saltato</span>
+                <span><i style="background:rgba(247,241,225,.07)"></i>riposo</span>
+              </div>
+            </div>
+            <div class="card">
+              <span class="eyebrow" style="color:var(--honey)">Blocchi</span>
+              <div style="margin-top:6px">
+                <div class="block-row"><i class="block-bar"></i><div style="flex:1"><b style="font-size:14px">1 · Accumulo</b><div class="app-sub num">sett. 1–6 · completato</div></div><span class="num" style="color:var(--go)">100%</span></div>
+                <div class="block-row"><i class="block-bar b2"></i><div style="flex:1"><b style="font-size:14px">2 · Ipertrofia</b><div class="app-sub num">sett. 7–19 · in corso</div></div><span class="num" style="color:var(--honey)">8%</span></div>
+                <div class="block-row"><i class="block-bar b3"></i><div style="flex:1"><b style="font-size:14px">3 · Forza</b><div class="app-sub num">sett. 20–32</div></div><span class="num" style="color:var(--drone)">—</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <span class="eyebrow" style="color:var(--honey)">Settimana 7</span>
+              <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+                <div class="setrow" style="grid-template-columns:34px 1fr auto"><span class="idx">LUN</span><span style="font-family:'IBM Plex Sans';font-size:13px">Lower B</span><span style="color:var(--go)">✓</span></div>
+                <div class="setrow" style="grid-template-columns:34px 1fr auto;background:rgba(255,192,0,0.14)"><span class="idx" style="color:var(--honey)">MER</span><span style="font-family:'IBM Plex Sans';font-size:13px">Upper A — Spinta</span><span style="color:var(--honey)">oggi</span></div>
+                <div class="setrow" style="grid-template-columns:34px 1fr auto"><span class="idx">VEN</span><span style="font-family:'IBM Plex Sans';font-size:13px">Upper B — Trazione</span><span class="pending">–</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. LINK CONDIVISO (tema chiaro) -->
+      <div class="screen">
+        <div class="cap"><strong>6 · Link ricevuto</strong><span>Chi apre il link non installa e non registra niente: la scheda è già dentro l'URL. Qui in tema chiaro, per mostrare che il sistema regge anche al sole.</span></div>
+        <div class="phone light">
+          <div class="statusbar"><span>9:41</span><span>DA WHATSAPP</span></div>
+          <div class="scr">
+            <div style="display:flex;align-items:center;gap:9px">
+              <img src="logo.png" width="28" height="28" alt="">
+              <span style="font-family:Archivo;font-variation-settings:'wdth' 122,'wght' 800;font-size:17px">The Beest</span>
+            </div>
+            <div class="card" style="border-left:4px solid #F08A00">
+              <div class="app-sub">Marco ti ha condiviso una scheda</div>
+              <div class="app-h" style="font-size:22px;color:#14120B;margin-top:4px">Full Body — Principianti</div>
+              <div class="app-sub num" style="margin-top:2px">6 esercizi · 16 serie · ~45 min</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="card row" style="padding:10px"><div class="media sm" style="background:#EFE7D2;border-color:rgba(11,10,7,.12);color:#7A705E">GIF</div><div class="t"><b style="color:#14120B">barbell full squat</b><span style="color:#6B6252">3×10 · 40 KG · REC 120"</span></div></div>
+              <div class="card row" style="padding:10px"><div class="media sm" style="background:#EFE7D2;border-color:rgba(11,10,7,.12);color:#7A705E">GIF</div><div class="t"><b style="color:#14120B">barbell bench press</b><span style="color:#6B6252">3×8 · 45 KG · REC 120"</span></div></div>
+              <div class="card row" style="padding:10px"><div class="media sm" style="background:#EFE7D2;border-color:rgba(11,10,7,.12);color:#7A705E">GIF</div><div class="t"><b style="color:#14120B">pull-up</b><span style="color:#6B6252">3×MAX · CORPO LIBERO</span></div></div>
+              <div class="app-sub" style="text-align:center">+ altri 3 esercizi</div>
+            </div>
+            <button class="btn">Importa nella mia app</button>
+            <button class="btn ghost" style="margin-bottom:10px">Solo guardare, grazie</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. PIANIFICAZIONE E PROMEMORIA -->
+      <div class="screen">
+        <div class="cap"><strong>7 · Quando ti alleni</strong><span>Scegli giorni e orario una volta sola: l'app costruisce le sessioni sul favo e manda il promemoria. Due canali, perché uno solo non basta su tutti i telefoni.</span></div>
+        <div class="phone">
+          <div class="statusbar"><span>9:41</span><span>PROMEMORIA</span></div>
+          <div class="scr">
+            <div>
+              <div class="app-h">Quando ti alleni</div>
+              <div class="app-sub">Blocco 2 — Ipertrofia · 13 settimane</div>
+            </div>
+            <div class="card">
+              <span class="eyebrow" style="color:var(--honey)">Giorni</span>
+              <div class="comb-m" style="margin-top:10px">
+                <div class="favo-row">
+                  <span class="cell done" style="color:var(--ink);font-weight:600">LUN</span>
+                  <span class="cell">MAR</span>
+                  <span class="cell done" style="color:var(--ink);font-weight:600">MER</span>
+                  <span class="cell">GIO</span>
+                  <span class="cell done" style="color:var(--ink);font-weight:600">VEN</span>
+                  <span class="cell">SAB</span>
+                  <span class="cell">DOM</span>
+                </div>
+              </div>
+              <div class="app-sub" style="margin-top:10px">3 sessioni a settimana · 39 in tutto il blocco</div>
+            </div>
+            <div class="card">
+              <div class="toggle">
+                <div><b style="font-size:14px">Ora di inizio</b><div class="app-sub">quando entri in palestra</div></div>
+                <span class="num" style="font-size:22px;color:var(--honey)">18:30</span>
+              </div>
+              <div class="toggle">
+                <div><b style="font-size:14px">Avvisami prima</b><div class="app-sub">il tempo per uscire di casa</div></div>
+                <span class="num" style="font-size:22px;color:var(--honey)">45'</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="toggle on">
+                <div style="flex:1"><b style="font-size:14px">Promemoria nel calendario</b><div class="app-sub">39 sessioni con avviso 45' prima, nel Calendario di iPhone</div></div>
+                <i class="sw-ui"></i>
+              </div>
+              <div class="toggle on">
+                <div style="flex:1"><b style="font-size:14px">Avvisi dentro l'app</b><div class="app-sub">fine recupero e riepilogo quando apri</div></div>
+                <i class="sw-ui"></i>
+              </div>
+            </div>
+            <button class="btn" style="margin-bottom:4px">Aggiungi al calendario</button>
+            <div class="app-sub" style="text-align:center;padding-bottom:10px">Le sessioni compaiono subito sul favo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. FINE ALLENAMENTO -->
+      <div class="screen">
+        <div class="cap"><strong>8 · Workout completato</strong><span>In fondo alla scheda del giorno, dopo l'ultimo esercizio. Un tap chiude la sessione, la scrive nello storico e accende la cella di oggi sul favo — senza conferme, senza schermate in mezzo.</span></div>
+        <div class="phone">
+          <div class="statusbar"><span>19:28</span><span>FINE SCHEDA</span></div>
+          <div class="scr">
+            <div class="hazard"></div>
+            <div class="live-bar">
+              <span style="display:flex;align-items:center;gap:8px"><i class="live-dot"></i><span class="num" style="font-size:13px">01:06:42</span></span>
+              <span class="app-sub num">5 / 5 esercizi</span>
+            </div>
+            <div>
+              <div class="app-h" style="font-size:22px">Upper A — Spinta</div>
+              <div class="app-sub">mercoledì 12 settembre · tutte le serie chiuse</div>
+            </div>
+            <div class="card notched hero-card" style="gap:12px">
+              <div style="display:flex">
+                <div style="flex:1"><div class="app-sub">Durata</div><div class="num" style="font-size:21px">66'</div></div>
+                <div style="flex:1"><div class="app-sub">Volume</div><div class="num" style="font-size:21px">5.180 kg</div></div>
+                <div style="flex:1"><div class="app-sub">Serie</div><div class="num" style="font-size:21px">18/18</div></div>
+              </div>
+              <div class="setgrid">
+                <div class="setrow done" style="grid-template-columns:1fr auto"><span style="font-family:'IBM Plex Sans';font-size:13px">barbell bench press</span><span>4×8 · 82.5 ↑2.5</span></div>
+                <div class="setrow done" style="grid-template-columns:1fr auto"><span style="font-family:'IBM Plex Sans';font-size:13px">barbell seated overhead press</span><span>4×10 · 40.0</span></div>
+                <div class="setrow done" style="grid-template-columns:1fr auto"><span style="font-family:'IBM Plex Sans';font-size:13px">dumbbell lateral raise</span><span>3×15 · 8.0</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <span class="eyebrow" style="color:var(--honey)">Settembre · si accende oggi</span>
+              <div class="comb-m" style="margin-top:10px">
+                <div class="favo-row">
+                  <span class="cell done">1</span><span class="cell">2</span><span class="cell done">3</span><span class="cell">4</span><span class="cell done">5</span><span class="cell">6</span>
+                </div>
+                <div class="favo-row odd">
+                  <span class="cell">7</span><span class="cell done">8</span><span class="cell">9</span><span class="cell done">10</span><span class="cell">11</span><span class="ring"><span class="cell plan">12</span></span>
+                </div>
+                <div class="favo-row">
+                  <span class="cell">13</span><span class="cell plan">14</span><span class="cell">15</span><span class="cell plan">16</span><span class="cell">17</span><span class="cell plan">18</span>
+                </div>
+              </div>
+            </div>
+            <button class="btn huge" style="margin-bottom:10px">Workout completato</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Promemoria · iPhone</span>
+      <h2>Il promemoria lo dà il Calendario</h2>
+      <p>
+        Su iPhone il web non può programmare una notifica per conto suo: niente background sync,
+        niente notifiche a tempo, e la push vera pretende un server acceso più l'app installata sulla Home.
+        Quindi il promemoria non lo dà l'app — lo dà il Calendario di iOS, che per questo mestiere è
+        più affidabile di qualsiasi push.
+      </p>
+    </div>
+    <div class="scroll-x">
+      <table class="spec">
+        <thead><tr><th>Canale</th><th>Su iPhone</th><th>Scelta</th></tr></thead>
+        <tbody>
+          <tr><td>Calendario .ics</td><td>Funziona sempre: l'app genera le sessioni con l'avviso incorporato, iOS le importa nel Calendario.</td><td><strong>È questo.</strong> Arriva con l'app chiusa, senza rete, anche se cancelli l'app. Ogni sessione ha un identificativo stabile: se cambi il piano e riesporti, gli eventi si aggiornano invece di duplicarsi.</td></tr>
+          <tr><td>Avvisi in app</td><td>Solo mentre l'app è aperta.</td><td>Sì, per fine recupero e riepilogo all'apertura. Suono, non vibrazione: iOS non dà vibrazione al web.</td></tr>
+          <tr><td>Periodic Background Sync</td><td>Non esiste su iOS.</td><td>No.</td></tr>
+          <tr><td>Web Push</td><td>Da iOS 16.4, ma solo con app aggiunta alla Home e con un server che la manda.</td><td>No: costerebbe un backend per fare peggio del Calendario.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rules" style="margin-top:22px">
+      <div class="rule">
+        <h3>Aggiungi alla Home, non è un vezzo</h3>
+        <p>Safari cancella i dati dei siti non usati per 7 giorni. Una PWA sulla Home è esente, ed è anche l'unico modo di avere schermo intero e schermo sempre acceso. Il primo avvio lo spiega, una volta sola.</p>
+      </div>
+      <div class="rule">
+        <h3>Il backup è parte del prodotto</h3>
+        <p>Nessun account significa nessun recupero password ma anche nessun recupero dati: l'app propone l'export dopo ogni blocco chiuso e tiene un file di backup pronto da mandarti su WhatsApp.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Sistema</span>
+      <h2>Regole d'uso, non suggerimenti</h2>
+      <p>Quello che finisce dentro <code>global.css</code> come token e come vincolo verificabile.</p>
+    </div>
+    <div class="scroll-x">
+      <table class="spec">
+        <thead><tr><th>Token / regola</th><th>Valore</th><th>Perché</th></tr></thead>
+        <tbody>
+          <tr><td>touch-min</td><td>48 × 48 px</td><td>Minimo assoluto per qualsiasi cosa si tocchi, anche le chip dei filtri.</td></tr>
+          <tr><td>touch-primary</td><td>56 px</td><td>Azione principale di ogni schermata, sempre a piena larghezza.</td></tr>
+          <tr><td>touch-live</td><td>74 px</td><td>"Serie fatta": si centra senza guardare, in fondo allo schermo.</td></tr>
+          <tr><td>contrasto testo</td><td>≥ 7:1</td><td>Wax su Ink fa 15,8:1. Drone su Hive fa 7,4:1, ed è il limite: sotto non si scende.</td></tr>
+          <tr><td>radius</td><td>14 px / notch 18 px</td><td>Il taglio d'angolo esagonale sta solo sulla card principale di ogni schermata: se è ovunque non significa più niente.</td></tr>
+          <tr><td>ambra</td><td>solo interattivo</td><td>Nessun elemento decorativo ambra. Se è ambra, si tocca.</td></tr>
+          <tr><td>celeste</td><td>solo recupero</td><td>Timer, pause, "riposo". Mai per azioni.</td></tr>
+          <tr><td>numeri</td><td>IBM Plex Mono tabular</td><td>Carichi e serie devono incolonnarsi fra loro e fra sessioni diverse.</td></tr>
+          <tr><td>fascia zebrata</td><td>1 uso</td><td>Solo la barra della sessione attiva. È l'unico momento in cui l'app urla.</td></tr>
+          <tr><td>animazioni</td><td>≤ 180 ms</td><td>Solo transizioni di stato; rispettano <code>prefers-reduced-motion</code>. Niente entrate coreografate.</td></tr>
+          <tr><td>attribuzione media</td><td>sotto ogni GIF</td><td>© Gym Visual, come richiede la notice del dataset.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    The Beest · direzione visiva, fase 3 — da approvare prima dello scaffolding.
+    Animazioni e miniature degli esercizi © Gym Visual — gymvisual.com. Dati esercizi: exercises-dataset, licenza MIT.
+  </footer>
+</div>
+
+<script>
+  // Il favo dell'anno: 365 celle, una per giorno del 2026.
+  // Pattern deterministico (lun/mer/ven, con qualche salto) fino al 12 settembre.
+  (function buildFavo() {
+    var host = document.getElementById('favo');
+    if (!host) return;
+    var PER_ROW = 19, OGGI = 255; // 12 settembre = giorno 255
+    var seed = 7;
+    function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+
+    var row = null;
+    for (var d = 1; d <= 365; d++) {
+      if ((d - 1) % PER_ROW === 0) {
+        row = document.createElement('div');
+        row.className = 'favo-row' + (((d - 1) / PER_ROW) % 2 ? ' odd' : '');
+        host.appendChild(row);
+      }
+      var giornoSettimana = (d + 3) % 7; // 1 gennaio 2026 = giovedì
+      var previsto = giornoSettimana === 1 || giornoSettimana === 3 || giornoSettimana === 5;
+      var cell = document.createElement('span');
+      cell.className = 'cell';
+      if (d < OGGI && previsto) {
+        var r = rnd();
+        cell.className += r < 0.1 ? ' skip' : (r > 0.72 ? ' done heavy' : ' done');
+      } else if (d >= OGGI && previsto) {
+        cell.className += ' plan';
+      }
+      if (d === OGGI) {
+        cell.className = 'cell plan';
+        var ring = document.createElement('span');
+        ring.className = 'ring';
+        ring.appendChild(cell);
+        row.appendChild(ring);
+        continue;
+      }
+      row.appendChild(cell);
+    }
+  })();
+</script>

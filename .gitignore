@@ -1,0 +1,9 @@
+node_modules
+dist
+dev-dist
+media-build
+.env
+.DS_Store
+
+# artefatti locali
+/tmp

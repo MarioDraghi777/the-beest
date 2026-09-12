@@ -1,0 +1,34 @@
+{
+  "name": "the-beest",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:lan": "vite --host",
+    "dev:phone": "node tools/dev-phone.mjs",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "ingest": "node tools/ingest.mjs",
+    "verify": "node tools/verify.mjs",
+    "media": "node tools/convert-media.mjs",
+    "prebuild": "node tools/verify.mjs"
+  },
+  "dependencies": {
+    "@preact/signals": "^1.3.0",
+    "dexie": "^4.0.8",
+    "preact": "^10.24.3"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.9.1",
+    "@types/node": "^22.9.0",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
+    "sharp": "^0.33.5",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-plugin-pwa": "^0.20.5",
+    "vitest": "^2.1.4"
+  }
+}

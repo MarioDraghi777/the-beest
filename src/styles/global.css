@@ -1,0 +1,1269 @@
+@import './fonts.css';
+
+/* ============================================================================
+   The Beest — sistema visivo
+   Dark-first per scelta: l'app si usa in palestra, con faretti in faccia.
+   Il tema chiaro esiste e segue il sistema operativo.
+   Regole dure: l'ambra significa "si tocca", il celeste significa "riposo".
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  --ink: #0b0a07;        /* fondo, nero caldo */
+  --hive: #16140e;       /* superficie delle card */
+  --hive-2: #221e15;     /* superficie sollevata, campi, badge */
+  --honey: #ffc000;      /* azione primaria — campionato dal logo */
+  --nectar: #f08a00;     /* azione premuta, fondo dei gradienti */
+  --wax: #f7f1e1;        /* testo principale */
+  --drone: #93897a;      /* testo secondario, mai per i numeri di carico */
+  --chill: #4fc3f7;      /* solo recupero e timer */
+  --go: #45c26b;
+  --stop: #ff4a3d;
+
+  --line: rgba(247, 241, 225, 0.1);
+  --line-strong: rgba(247, 241, 225, 0.22);
+  --field: rgba(247, 241, 225, 0.05);
+
+  --radius: 14px;
+  --notch: 18px;         /* taglio d'angolo esagonale, solo card principale */
+
+  --touch-min: 48px;     /* minimo per qualunque cosa si tocchi */
+  --touch-primary: 56px; /* azione principale di schermata */
+  --touch-live: 74px;    /* "serie fatta", si centra senza guardare */
+  --tabbar-h: 62px;
+
+  --font-display: Archivo, 'Arial Black', system-ui, sans-serif;
+  --font-ui: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-data: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    color-scheme: light;
+    --ink: #f7f1e1;
+    --hive: #fffbf0;
+    --hive-2: #efe7d2;
+    --honey: #b46a00;    /* ambra scurita: su fondo cera serve contrasto */
+    --nectar: #8f4f00;
+    --wax: #14120b;
+    --drone: #6b6252;
+    --chill: #0277bd;
+    --go: #217a45;
+    --stop: #c62828;
+    --line: rgba(11, 10, 7, 0.12);
+    --line-strong: rgba(11, 10, 7, 0.24);
+    --field: rgba(11, 10, 7, 0.04);
+  }
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --ink: #f7f1e1;
+  --hive: #fffbf0;
+  --hive-2: #efe7d2;
+  --honey: #b46a00;
+  --nectar: #8f4f00;
+  --wax: #14120b;
+  --drone: #6b6252;
+  --chill: #0277bd;
+  --go: #217a45;
+  --stop: #c62828;
+  --line: rgba(11, 10, 7, 0.12);
+  --line-strong: rgba(11, 10, 7, 0.24);
+  --field: rgba(11, 10, 7, 0.04);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--ink);
+  color: var(--wax);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.55;
+  overscroll-behavior-y: none;
+}
+
+#app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --------------------------------------------------------------- tipografia */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 122, 'wght' 800;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 26px;
+}
+h2 {
+  font-size: 20px;
+}
+h3 {
+  font-size: 16px;
+  font-variation-settings: 'wdth' 112, 'wght' 700;
+}
+
+.eyebrow {
+  font-family: var(--font-data);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--drone);
+}
+
+.sub {
+  font-size: 12.5px;
+  color: var(--drone);
+}
+
+/* Ogni numero che conta: cifre tabulari, così le colonne si allineano. */
+.num {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ layout */
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: calc(12px + env(safe-area-inset-top)) 16px calc(var(--tabbar-h) + 24px);
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.page-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ------------------------------------------------------------------- card */
+.card {
+  background: var(--hive);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+/* Il taglio d'angolo viene dall'esagono e sta solo sulla card principale
+   di ogni schermata: se è ovunque non significa più niente. */
+.card-hero {
+  clip-path: polygon(0 0, calc(100% - var(--notch)) 0, 100% var(--notch), 100% 100%, 0 100%);
+  border: 0;
+  background: linear-gradient(155deg, var(--hive-2), var(--hive) 70%);
+  padding: 16px;
+}
+
+/* ---------------------------------------------------------------- comandi */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--touch-primary);
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--honey), var(--nectar));
+  color: #0b0a07;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 118, 'wght' 800;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.btn:active {
+  background: var(--nectar);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--wax);
+  border: 1px solid var(--line-strong);
+  min-height: var(--touch-min);
+  font-size: 14px;
+}
+
+.btn-live {
+  min-height: var(--touch-live);
+  font-size: 21px;
+}
+
+:where(button, a, input, [tabindex]):focus-visible {
+  outline: 3px solid var(--honey);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ campi */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--touch-min);
+  padding: 0 14px;
+  background: var(--hive);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.field input {
+  all: unset;
+  flex: 1;
+  min-width: 0;
+  color: var(--wax);
+  font-family: var(--font-ui);
+  font-size: 16px; /* sotto i 16px iOS zooma da solo sul focus */
+}
+
+.field input::placeholder {
+  color: var(--drone);
+}
+
+/* ------------------------------------------------------------------- chip */
+.chips {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex: 0 0 auto;
+  min-height: var(--touch-min);
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--drone);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--honey);
+  border-color: var(--honey);
+  color: #0b0a07;
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------- esagoni e miniature */
+.hex {
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+.media {
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: var(--hive-2);
+  border: 1px solid var(--line);
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.media-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-data);
+  font-size: 9px;
+  color: var(--drone);
+  background-image: repeating-conic-gradient(
+    from 30deg,
+    rgba(255, 192, 0, 0.06) 0 60deg,
+    transparent 0 120deg
+  );
+  background-size: 22px 38px;
+}
+
+.attribution {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: var(--drone);
+  text-align: center;
+}
+
+/* -------------------------------------------------------------- tab bar */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--hive);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab {
+  min-height: var(--tabbar-h);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  background: transparent;
+  color: var(--drone);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.tab[aria-current='page'] {
+  color: var(--honey);
+}
+
+.tab svg {
+  width: 21px;
+  height: 21px;
+}
+
+/* ------------------------------------------------------------------ varie */
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: var(--hive);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.list-row .title {
+  display: block;
+  font-weight: 600;
+  font-size: 14.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-row .meta {
+  display: block;
+  font-family: var(--font-data);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--drone);
+  text-transform: uppercase;
+}
+
+.empty {
+  text-align: center;
+  color: var(--drone);
+  padding: 40px 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ------------------------------------------------- dettaglio esercizio */
+.icon-btn {
+  flex: 0 0 auto;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--wax);
+  cursor: pointer;
+}
+
+.icon-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.exercise-media {
+  width: 100%;
+  max-width: 240px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  image-rendering: auto;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.badges::-webkit-scrollbar {
+  display: none;
+}
+
+.hexbadge {
+  flex: 0 0 auto;
+  width: 52px;
+  height: 58px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--hive-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  text-align: center;
+}
+
+.hexbadge b {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 108, 'wght' 800;
+  font-size: 14px;
+  color: var(--wax);
+  line-height: 1;
+}
+
+.hexbadge span {
+  font-family: var(--font-data);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: var(--drone);
+}
+
+.steps {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.steps li::marker {
+  color: var(--honey);
+  font-family: var(--font-data);
+  font-size: 13px;
+}
+
+/* ----------------------------------------------------------- pannello basso */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 620px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--hive);
+  border-top: 1px solid var(--line-strong);
+  border-radius: 20px 20px 0 0;
+  padding: 8px 16px calc(20px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sheet-grip {
+  width: 42px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line-strong);
+  margin: 2px auto 4px;
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sheet-head h2 {
+  flex: 1;
+  min-width: 0;
+  font-size: 19px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ------------------------------------------------------------ campi editor */
+.title-input {
+  all: unset;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 122, 'wght' 800;
+  font-size: 26px;
+  line-height: 1.1;
+  color: var(--wax);
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 6px;
+}
+
+.title-input:focus {
+  border-bottom-color: var(--honey);
+}
+
+.notes-input {
+  width: 100%;
+  background: var(--hive);
+  color: var(--wax);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  resize: vertical;
+}
+
+.cell-input {
+  background: var(--hive-2);
+  color: var(--wax);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  min-height: var(--touch-min);
+  padding: 0 12px;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 16px;
+  text-align: right;
+}
+
+select.cell-input {
+  text-align: left;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: var(--touch-min);
+}
+
+.form-row .chips {
+  flex: 1;
+  overflow-x: auto;
+}
+
+/* ---------------------------------------------------------------- stepper */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stepper-label {
+  font-size: 14px;
+  color: var(--drone);
+}
+
+.stepper-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stepper-value {
+  min-width: 62px;
+  text-align: center;
+  font-size: 20px;
+}
+
+.icon-btn:disabled {
+  opacity: 0.35;
+}
+
+.icon-btn.small {
+  width: 34px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.icon-btn.small svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ----------------------------------------------------------------- schede */
+.workout-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.workout-open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.workout-title {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 118, 'wght' 700;
+  font-size: 18px;
+}
+
+.workout-preview {
+  font-size: 12px;
+  color: var(--drone);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------- righe di scheda */
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 10px 8px;
+}
+
+.item-order {
+  flex: 0 0 auto;
+  width: 26px;
+  text-align: center;
+  color: var(--drone);
+  font-size: 13px;
+}
+
+.superset-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 27px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--honey);
+  color: #0b0a07;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 108, 'wght' 800;
+  font-size: 12px;
+}
+
+.item-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.item-name {
+  font-weight: 600;
+  font-size: 14.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-summary {
+  font-size: 12.5px;
+  color: var(--honey);
+  font-weight: 400;
+}
+
+.item-note {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-move {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ------------------------------------------------------- modalità selezione */
+.picker-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin: -4px -4px 0;
+  background: var(--hive-2);
+  border: 1px solid var(--honey);
+  border-radius: var(--radius);
+}
+
+.picker-target {
+  display: block;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 118, 'wght' 700;
+  font-size: 17px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pick-mark {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  color: var(--honey);
+  font-size: 17px;
+  line-height: 1;
+}
+
+.pick-mark.added {
+  background: var(--go);
+  border-color: var(--go);
+  color: #0b0a07;
+  font-size: 14px;
+}
+
+/* ------------------------------------------------------------ distruttivi */
+.btn-danger {
+  color: var(--stop);
+  border-color: var(--stop);
+}
+
+.btn-danger-solid {
+  background: var(--stop);
+  color: #fff;
+}
+
+/* ======================================================= allenamento in corso
+   È l'unica schermata in cui l'app alza la voce: fascia zebrata, punto rosso
+   pulsante e un bersaglio da 74 px che si centra senza guardare.
+   ========================================================================= */
+.live {
+  gap: 12px;
+}
+
+.hazard {
+  height: 6px;
+  border-radius: 3px;
+  background-image: repeating-linear-gradient(135deg, var(--honey) 0 10px, var(--ink) 10px 20px);
+}
+
+.live-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--hive-2);
+  border-radius: 10px;
+  padding: 8px 8px 8px 12px;
+}
+
+.live-bar .sub {
+  flex: 1;
+  text-align: right;
+}
+
+.live-dot {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--stop);
+  box-shadow: 0 0 0 4px rgba(255, 74, 61, 0.18);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .live-dot {
+    animation: live-pulse 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes live-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* --------------------------------------------------------- griglia serie */
+.setgrid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setrow {
+  display: grid;
+  grid-template-columns: 26px 1fr 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--field);
+}
+
+.setrow.done {
+  background: rgba(69, 194, 107, 0.14);
+}
+
+.setrow.current {
+  background: rgba(255, 192, 0, 0.14);
+  outline: 1px solid var(--honey);
+}
+
+.setrow-idx {
+  font-size: 12px;
+  color: var(--drone);
+}
+
+.setrow.current .setrow-idx {
+  color: var(--honey);
+}
+
+.setrow-cell {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+}
+
+.setrow-cell .unit {
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--drone);
+}
+
+.live-input {
+  all: unset;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--wax);
+  text-align: right;
+}
+
+.live-input::placeholder {
+  color: var(--drone);
+  font-weight: 400;
+}
+
+/* nasconde le frecce dei number: rubano spazio e non si centrano col pollice */
+.live-input::-webkit-outer-spin-button,
+.live-input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.live-input[type='number'] {
+  appearance: textfield;
+}
+
+.setrow-state {
+  justify-self: end;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--drone);
+  font-size: 16px;
+  cursor: default;
+}
+
+.setrow-state.done {
+  color: var(--go);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.setrow.current .setrow-state {
+  color: var(--honey);
+}
+
+.finish-name {
+  font-size: 13.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- recupero */
+.rest-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-color: var(--chill);
+}
+
+.timer {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--chill);
+}
+
+.rest-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 108px;
+}
+
+.rest-actions .btn {
+  min-height: 40px;
+  font-size: 13px;
+}
+
+/* --------------------------------------------------- barra azione in basso */
+.live-nav {
+  position: sticky;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.live-nav .icon-btn {
+  width: 52px;
+  height: auto;
+  background: var(--hive);
+}
+
+/* ---------------------------------------------------- rientro all'allenamento */
+.live-banner {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(var(--tabbar-h) + 10px + env(safe-area-inset-bottom));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--honey);
+  border-radius: 12px;
+  background: var(--hive-2);
+  color: var(--wax);
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.live-banner-name {
+  display: block;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 118, 'wght' 700;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-banner-cta {
+  flex: 0 0 auto;
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 112, 'wght' 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--honey);
+}
+
+.icon-btn.start {
+  border-color: var(--honey);
+  color: var(--honey);
+}
+
+/* =================================================================== il favo
+   Una cella per giorno, 365 in una schermata. Le celle sono volutamente più
+   piccole del minimo touch: il favo è un colpo d'occhio, il tap apre il
+   giorno nel pannello sotto. Il calendario toccabile è la striscia della
+   settimana, con celle da 44 px.
+   ========================================================================= */
+.favo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.favo-row {
+  display: flex;
+  gap: 2px;
+  margin-top: -5px;
+}
+
+.favo-row:first-child {
+  margin-top: 0;
+}
+
+.favo-row.odd {
+  margin-left: 10px;
+}
+
+.cell {
+  width: 18px;
+  height: 20px;
+  flex: 0 0 auto;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--field);
+  cursor: pointer;
+}
+
+.cell.planned {
+  background: rgba(255, 192, 0, 0.22);
+}
+
+.cell.done {
+  background: var(--honey);
+}
+
+.cell.done.heavy {
+  background: linear-gradient(160deg, var(--honey), var(--nectar));
+}
+
+.cell.skipped {
+  background: rgba(255, 74, 61, 0.32);
+}
+
+.ring {
+  display: inline-flex;
+  padding: 2px;
+  flex: 0 0 auto;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--wax);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 10.5px;
+  color: var(--drone);
+}
+
+.legend i {
+  display: inline-block;
+  width: 11px;
+  height: 12px;
+  margin-right: 4px;
+  vertical-align: -1px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+/* ------------------------------------------------------ striscia settimana */
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.week-day {
+  min-height: 62px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 6px 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--drone);
+  font: inherit;
+  cursor: pointer;
+}
+
+.week-day.today {
+  border-color: var(--wax);
+  color: var(--wax);
+}
+
+.week-day.done {
+  background: rgba(255, 192, 0, 0.16);
+  border-color: var(--honey);
+  color: var(--honey);
+}
+
+.week-day-name {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.week-day-num {
+  font-size: 15px;
+}
+
+.week-day-dot {
+  font-size: 10px;
+  height: 12px;
+  color: var(--honey);
+}
+
+/* --------------------------------------------------------------- blocchi */
+.block-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.block-row:last-child {
+  border-bottom: 0;
+}
+
+.block-bar {
+  width: 4px;
+  align-self: stretch;
+  border-radius: 2px;
+  background: var(--honey);
+}
+
+/* --------------------------------------------------- scelte di propagazione */
+.scope-option {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 62px;
+  padding: 12px 14px;
+  text-transform: none;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  text-align: left;
+}
+
+.scope-option b {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 112, 'wght' 700;
+  font-size: 15px;
+}
+
+.scope-option .sub {
+  font-weight: 400;
+}
+
+.scope-option:disabled {
+  opacity: 0.4;
+}
+
+.linkish {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--honey);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------ condivisione */
+.shared-head {
+  border-left: 4px solid var(--honey);
+}
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
