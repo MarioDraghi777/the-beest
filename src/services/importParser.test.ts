@@ -136,3 +136,29 @@ Rematore bilanciere 4x10 50kg (busto a 45 gradi)`;
     expect(misto[0].rows).toHaveLength(3);
   });
 });
+
+describe('numeri che non sono carichi', () => {
+  it('la numerazione della riga non è un peso', () => {
+    expect(p('1) Panca piana 4x8').load).toBeUndefined();
+    expect(p('2. Trazioni 4xmax').load).toBeUndefined();
+  });
+
+  it('i gradi nel nome non sono un peso', () => {
+    const row = p('Panca inclinata 30° 4x10');
+    expect(row.load).toBeUndefined();
+    expect(row.name).toBe('Panca inclinata 30°');
+  });
+
+  it('una percentuale del massimale non è un peso', () => {
+    expect(p('Squat 5x5 80% 1RM').load).toBeUndefined();
+  });
+
+  it('ma il carico con l\'unità si prende sempre', () => {
+    expect(p('1) Panca piana 4x8 60kg').load).toBe(60);
+    expect(p('3. Squat 5x5 100 kg').load).toBe(100);
+  });
+
+  it('e un numero nudo dopo le serie resta un carico', () => {
+    expect(p('Panca piana 4x8 60').load).toBe(60);
+  });
+});

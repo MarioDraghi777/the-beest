@@ -271,7 +271,7 @@ function DaySheet({ date, onClose }: { date: string; onClose: () => void }) {
 
             <div class="stack" style={{ marginTop: '10px' }}>
               {entry.status !== 'fatto' && workout && (
-                <button class="btn" type="button" onClick={() => void startOrResume(workout.id)}>
+                <button class="btn" type="button" onClick={() => void startOrResume(workout.id, entry.id)}>
                   {date === today() ? 'Inizia allenamento' : 'Allenati comunque'}
                 </button>
               )}

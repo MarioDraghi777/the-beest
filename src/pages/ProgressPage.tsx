@@ -84,7 +84,7 @@ export function ProgressPage() {
           </span>
 
           <div class="chips" style={{ marginTop: '10px' }} role="group" aria-label="Scegli l'esercizio">
-            {trained.slice(0, 12).map((t) => (
+            {trained.map((t) => (
               <button
                 key={`${t.ref.type}:${t.ref.id}`}
                 type="button"

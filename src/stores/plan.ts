@@ -159,6 +159,28 @@ export async function addEntry(date: string, workoutId: string): Promise<void> {
   entries.value = [...entries.value, entry].sort((a, b) => a.date.localeCompare(b.date));
 }
 
+/**
+ * Quante sedute ancora da fare usano una scheda. Serve prima di cancellarla:
+ * chi la elimina deve sapere che sta svuotando anche dei giorni di calendario.
+ */
+export function entriesUsingWorkout(workoutId: string): PlanEntry[] {
+  return entries.value.filter((e) => e.workoutId === workoutId && e.status === 'previsto');
+}
+
+/**
+ * Toglie dal piano le sedute da fare che usano quella scheda. Quelle già
+ * fatte restano: sono storia, e la sessione registrata le racconta per intero
+ * anche senza la scheda originale.
+ */
+export async function removeEntriesForWorkout(workoutId: string): Promise<number> {
+  const doomed = entriesUsingWorkout(workoutId);
+  if (!doomed.length) return 0;
+  await db.planEntries.bulkDelete(doomed.map((e) => e.id));
+  const ids = new Set(doomed.map((e) => e.id));
+  entries.value = entries.value.filter((e) => !ids.has(e.id));
+  return doomed.length;
+}
+
 /** Chiamata alla fine di un allenamento: accende la cella del favo. */
 export async function markEntryDone(entryId: string, sessionId: string): Promise<void> {
   const entry = entries.value.find((e) => e.id === entryId);

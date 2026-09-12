@@ -6,6 +6,7 @@ import { goBack, navigate } from '../router';
 import { label as taxLabel, taxonomy } from '../services/catalog';
 import { workoutPayload } from '../services/shareCodec';
 import { summary } from '../services/workoutFormat';
+import { entriesUsingWorkout, removeEntriesForWorkout } from '../stores/plan';
 import { startPicking } from '../stores/picker';
 import { active, startOrResume } from '../stores/session';
 import {
@@ -47,6 +48,7 @@ export function WorkoutEditPage({ id }: { id: string }) {
     );
   }
 
+  const usataNelPiano = entriesUsingWorkout(id).length;
   const item = editing != null ? workout.items[editing] : undefined;
   const patch = (change: Partial<WorkoutItem>) => {
     if (editing == null || !item) return;
@@ -327,10 +329,17 @@ export function WorkoutEditPage({ id }: { id: string }) {
             «{workout.name}» verrà cancellata con i suoi {workout.items.length} esercizi. Non si torna
             indietro.
           </p>
+          {usataNelPiano > 0 && (
+            <p class="sub">
+              È usata in {usataNelPiano} sedut{usataNelPiano === 1 ? 'a' : 'e'} del piano ancora da
+              fare: spariranno anche quelle. Gli allenamenti già registrati restano nello storico.
+            </p>
+          )}
           <button
             class="btn btn-danger-solid"
             type="button"
             onClick={async () => {
+              await removeEntriesForWorkout(id);
               await deleteWorkout(id);
               navigate('schede');
             }}

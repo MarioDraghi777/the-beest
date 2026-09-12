@@ -58,10 +58,13 @@ export async function loadSessions(): Promise<void> {
   sessions.value = all.sort((a, b) => b.startedAt - a.startedAt);
   sessionsLoaded.value = true;
 
-  const restored = saved?.value as { session: Session; index: number } | undefined;
+  const restored = saved?.value as { session: Session; index: number; rest?: RestState } | undefined;
   if (restored?.session) {
     active.value = restored.session;
     currentIndex.value = restored.index ?? 0;
+    // Un recupero scaduto mentre l'app era chiusa non deve suonare adesso.
+    const saved2 = restored.rest;
+    rest.value = saved2?.endsAt && saved2.endsAt > Date.now() ? saved2 : { endsAt: null, totalSec: 0 };
     startTicking();
     void keepScreenAwake();
   }
@@ -69,7 +72,12 @@ export async function loadSessions(): Promise<void> {
 
 async function persist(): Promise<void> {
   if (active.value) {
-    await db.settings.put({ key: ACTIVE_KEY, value: { session: active.value, index: currentIndex.value } });
+    await db.settings.put({
+      key: ACTIVE_KEY,
+      // Anche il recupero: è salvato come istante di fine, quindi dopo un
+      // ricaricamento riprende dal punto giusto invece di ripartire da capo.
+      value: { session: active.value, index: currentIndex.value, rest: rest.value },
+    });
   } else {
     await db.settings.delete(ACTIVE_KEY);
   }
@@ -120,8 +128,8 @@ export async function startSession(workoutId: string, planEntryId?: string): Pro
  * Inizia l'allenamento, oppure riapre quello già in corso: due allenamenti
  * aperti insieme non hanno senso e perderebbero dati.
  */
-export async function startOrResume(workoutId: string): Promise<void> {
-  if (!active.value) await startSession(workoutId);
+export async function startOrResume(workoutId: string, planEntryId?: string): Promise<void> {
+  if (!active.value) await startSession(workoutId, planEntryId);
   navigate('allenamento');
 }
 
@@ -166,7 +174,10 @@ export function completeSet(entryIndex: number, setIndex: number): void {
   }));
 
   const seconds = set.restSec ?? 90;
-  if (seconds > 0) rest.value = { endsAt: Date.now() + seconds * 1000, totalSec: seconds };
+  if (seconds > 0) {
+    rest.value = { endsAt: Date.now() + seconds * 1000, totalSec: seconds };
+    void persist();
+  }
 }
 
 /** Annulla l'ultima serie segnata, perché il tasto grosso si preme per sbaglio. */
@@ -198,10 +209,12 @@ export function addRest(seconds: number): void {
   const r = rest.value;
   if (!r.endsAt) return;
   rest.value = { endsAt: r.endsAt + seconds * 1000, totalSec: r.totalSec + seconds };
+  void persist();
 }
 
 export function skipRest(): void {
   rest.value = { endsAt: null, totalSec: 0 };
+  void persist();
 }
 
 export function restRemainingMs(): number {

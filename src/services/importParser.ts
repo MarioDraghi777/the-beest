@@ -74,25 +74,50 @@ function parseRest(line: string): number | undefined {
 /**
  * Il carico è il numero che resta dopo aver tolto serie, ripetizioni e
  * recupero: cercarlo prima porterebbe a leggere "4x8" come 4 kg.
+ *
+ * Due trappole che si vedono in ogni scheda vera:
+ * - la numerazione della riga ("1) Panca piana 4x8") verrebbe letta come un
+ *   carico da 1 kg, quindi il prefisso si toglie sempre;
+ * - un numero senza unità conta solo se sta DOPO le serie, che è dove si
+ *   scrive il carico: "Panca inclinata 30° 4x10" ha 30 nel nome, non nel peso.
  */
-function parseLoad(line: string, consumed: string[]): { load?: number; unit?: 'kg' | 'lb' } {
-  let rest = line;
-  for (const piece of consumed) rest = rest.replace(piece, ' ');
+function parseLoad(
+  line: string,
+  consumed: string[],
+  afterSets: string | null
+): { load?: number; unit?: 'kg' | 'lb' } {
+  const strip = (text: string) => {
+    let out = text.replace(PREFISSO, ' ');
+    for (const piece of consumed) out = out.replace(piece, ' ');
+    return out;
+  };
 
-  CARICO.lastIndex = 0;
-  let best: { load: number; unit?: 'kg' | 'lb' } | null = null;
-  let match: RegExpExecArray | null;
-  while ((match = CARICO.exec(rest))) {
-    const value = Number(match[1].replace(',', '.'));
-    const unitRaw = (match[2] ?? '').toLowerCase();
-    const unit = unitRaw.startsWith('lb') || unitRaw === 'libbre' ? 'lb' : unitRaw ? 'kg' : undefined;
-    if (!Number.isFinite(value) || value <= 0 || value > 999) continue;
-    // Con l'unità scritta è certo; senza, si prende comunque il primo numero
-    // rimasto, ma l'unità resta indefinita e l'utente la conferma.
-    if (unit) return { load: value, unit };
-    if (!best) best = { load: value };
+  const cerca = (text: string, richiediUnita: boolean): { load: number; unit?: 'kg' | 'lb' } | null => {
+    CARICO.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = CARICO.exec(text))) {
+      const value = Number(match[1].replace(',', '.'));
+      const unitRaw = (match[2] ?? '').toLowerCase();
+      const unit = unitRaw.startsWith('lb') || unitRaw === 'libbre' ? 'lb' : unitRaw ? 'kg' : undefined;
+      if (!Number.isFinite(value) || value <= 0 || value > 999) continue;
+      // Gradi e percentuali non sono carichi: "30°", "70% del massimale".
+      if (/^[\s]*[°%]/.test(text.slice(match.index + match[0].length))) continue;
+      if (unit) return { load: value, unit };
+      if (!richiediUnita) return { load: value };
+    }
+    return null;
+  };
+
+  // Prima un numero con l'unità scritta, ovunque sia: quello è certo.
+  const conUnita = cerca(strip(line), true);
+  if (conUnita) return conUnita;
+
+  // Poi, solo dopo le serie, un numero nudo.
+  if (afterSets) {
+    const nudo = cerca(strip(afterSets), false);
+    if (nudo) return nudo;
   }
-  return best ?? {};
+  return {};
 }
 
 export function parseLine(raw: string): DraftRow | null {
@@ -121,7 +146,8 @@ export function parseLine(raw: string): DraftRow | null {
     consumed.push(setsMatch[0]);
   }
 
-  const { load, unit } = parseLoad(line, consumed);
+  const afterSets = setsMatch ? line.slice(line.indexOf(setsMatch[0]) + setsMatch[0].length) : null;
+  const { load, unit } = parseLoad(line, consumed, afterSets);
   if (load != null) {
     row.load = load;
     row.loadUnit = unit ?? 'kg';

@@ -56,7 +56,7 @@ export function DataPage() {
 
       <div class="card card-hero">
         <span class="eyebrow" style={{ color: 'var(--honey)' }}>
-          Sul questo dispositivo
+          Su questo dispositivo
         </span>
         <div class="row" style={{ marginTop: '10px' }}>
           <div style={{ flex: 1 }}>
