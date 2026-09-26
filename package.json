@@ -14,7 +14,9 @@
     "ingest": "node tools/ingest.mjs",
     "verify": "node tools/verify.mjs",
     "media": "node tools/convert-media.mjs",
-    "prebuild": "node tools/verify.mjs"
+    "promo": "node tools/promo-video.mjs",
+    "prebuild": "node tools/verify.mjs",
+    "reel": "node tools/promo-reel.mjs"
   },
   "dependencies": {
     "@preact/signals": "^1.3.0",
@@ -25,6 +27,8 @@
     "@preact/preset-vite": "^2.9.1",
     "@types/node": "^22.9.0",
     "@vitejs/plugin-basic-ssl": "^1.1.0",
+    "ffmpeg-static": "^5.2.0",
+    "playwright-core": "^1.63.0",
     "sharp": "^0.33.5",
     "typescript": "^5.6.3",
     "vite": "^5.4.11",

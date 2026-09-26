@@ -7,3 +7,7 @@ media-build
 
 # artefatti locali
 /tmp
+
+# build e file di lavoro del reel
+dist-reel
+design/promo/reel-work
