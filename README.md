@@ -39,6 +39,7 @@ npm test           # 176 test su dati, ricerca, calendario, import e condivision
 npm run ingest     # dataset grezzo -> public/data (serve il dataset)
 npm run verify     # controlli di integrità sui dati generati
 npm run media      # GIF/JPG -> WebP in media-build/ (~1 minuto)
+npm run promo      # rigenera il video verticale per le storie
 ```
 
 ## Dati
@@ -92,7 +93,7 @@ In sviluppo, Vite serve `media-build/` su `/media-local` (vedi
 
 ## Import
 
-Testo incollato, CSV, JSON e foto. Il parser del testo legge i formati che si
+Testo incollato, CSV, JSON, PDF e foto. Il parser del testo legge i formati che si
 usano davvero (`Panca piana 4x8 60kg rec 90"`, `3 x 10 @ 80`, `4xmax`,
 `3x30s`), e i nomi vengono riconosciuti su tre livelli: traduzione canonica
 scritta a mano per i termini più usati (`panca piana` È quella col bilanciere,
@@ -100,6 +101,12 @@ e lo decide una tabella, non un punteggio), nome inglese identico, punteggio
 per token con tolleranza ai refusi. Quello che resta incerto passa per una
 riga di conferma con i tre candidati migliori — un esercizio sbagliato non
 entra mai in scheda di nascosto.
+
+Il PDF passa da pdf.js, anche lui a CDN e solo su richiesta: i frammenti di
+testo vengono rimessi in righe per coordinata (stessa quota = stessa riga,
+buco orizzontale = spazio), così anche una tabella esce leggibile dal parser.
+Se dentro non c'è testo — la scheda scansionata — la prima pagina viene
+disegnata come immagine e si prosegue dalla strada della foto.
 
 L'OCR delle foto è opzionale e sta dietro un bottone: Tesseract pesa una
 quindicina di megabyte scaricati da CDN al primo uso, e su una scheda scritta

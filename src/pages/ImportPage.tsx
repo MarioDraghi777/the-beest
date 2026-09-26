@@ -10,6 +10,7 @@ import { isBackup, restoreBackup } from '../services/backup';
 import { createCustomExercise, createWorkout, customExercises, saveWorkout } from '../stores/workouts';
 import type { Exercise, WorkoutItem } from '../types';
 import { readOcr, ocrAvailable } from '../services/ocr';
+import { isPdf, pdfAvailable, readPdfText, renderPdfPage } from '../services/pdf';
 
 type Source = 'testo' | 'file' | 'foto';
 
@@ -60,6 +61,14 @@ export function ImportPage() {
     setBusy(true);
     setMessage(null);
     try {
+      // PDF: prima lo strato di testo, e solo se non c'è si ripiega
+      // sull'immagine della pagina. Va fatto prima di file.text(), che su un
+      // PDF restituirebbe binario.
+      if (isPdf(file)) {
+        await apriPdf(file);
+        return;
+      }
+
       const content = await file.text();
 
       // JSON: o un backup completo, o una scheda condivisa
@@ -128,6 +137,27 @@ export function ImportPage() {
     } finally {
       setBusy(false);
     }
+  };
+
+  const apriPdf = async (file: File) => {
+    if (!pdfAvailable()) {
+      setMessage('Per aprire un PDF serve la rete: il motore di lettura si scarica al primo uso.');
+      return;
+    }
+    const testo = await readPdfText(file);
+    if (testo.trim()) {
+      setText(testo);
+      setSource('testo');
+      analizza(testo);
+      return;
+    }
+    // Nessun testo dentro: è una scansione. Si continua come con una foto.
+    setPhoto(await renderPdfPage(file, 1));
+    setSource('foto');
+    setMessage(
+      'Questo PDF è una scansione, dentro non c’è testo. Te l’ho aperto come immagine: ' +
+        'prova la lettura automatica, oppure ricopia i nomi qui sotto.'
+    );
   };
 
   const leggiFoto = async (file: File) => {
@@ -287,7 +317,7 @@ export function ImportPage() {
               setMessage(null);
             }}
           >
-            {s === 'testo' ? 'Testo incollato' : s === 'file' ? 'File CSV o JSON' : 'Foto'}
+            {s === 'testo' ? 'Testo incollato' : s === 'file' ? 'File CSV, JSON o PDF' : 'Foto'}
           </button>
         ))}
       </div>
@@ -323,14 +353,14 @@ export function ImportPage() {
       {source === 'file' && (
         <>
           <p class="sub">
-            Un CSV esportato da Excel o Fogli Google, un backup di The Beest, o una scheda ricevuta
-            come file.
+            Un PDF della scheda, un CSV esportato da Excel o Fogli Google, un backup di The Beest, o
+            una scheda ricevuta come file.
           </p>
           <label class="btn" style={{ cursor: 'pointer' }}>
             {busy ? 'Leggo…' : 'Scegli il file'}
             <input
               type="file"
-              accept=".csv,.json,.txt,text/csv,application/json"
+              accept=".csv,.json,.txt,.pdf,text/csv,application/json,application/pdf"
               style={{ display: 'none' }}
               onChange={(e) => {
                 const file = (e.target as HTMLInputElement).files?.[0];
@@ -343,6 +373,10 @@ export function ImportPage() {
             <p class="sub" style={{ margin: '8px 0 0' }}>
               esercizio, serie, ripetizioni, carico, recupero, note — in italiano o in inglese, in
               qualunque ordine. Senza intestazione leggo le prime quattro colonne in quest'ordine.
+            </p>
+            <p class="sub" style={{ margin: '8px 0 0' }}>
+              Del PDF leggo il testo riga per riga; se è una scansione lo apro come immagine e si
+              procede come con una foto.
             </p>
           </div>
         </>

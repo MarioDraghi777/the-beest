@@ -191,6 +191,28 @@ h3 {
 }
 
 /* ---------------------------------------------------------------- comandi */
+
+/* Due tocchi ravvicinati su un comando — «esercizio successivo» premuto due
+   volte di fila — per iOS sono un doppio-tap: zooma la pagina e si mangia il
+   secondo tocco. `manipulation` spegne il doppio-tap-per-zoomare; il pinch
+   per ingrandire resta. Vale anche per i contenitori dei comandi, perché il
+   secondo colpo spesso cade nel bordo fra un tasto e l'altro. */
+:where(
+  button,
+  a,
+  label,
+  summary,
+  [role='button'],
+  .live-nav,
+  .live-bar,
+  .setgrid,
+  .rest-actions,
+  .chips,
+  .tabbar
+) {
+  touch-action: manipulation;
+}
+
 .btn {
   display: flex;
   align-items: center;
@@ -1386,4 +1408,50 @@ label.btn {
   font-family: var(--font-data);
   font-size: 9px;
   fill: var(--drone);
+}
+
+/* ------------------------------------------------------- trascina per eliminare
+   L'azione sta sotto la riga e si scopre trascinando verso sinistra. Il
+   contenuto è opaco e copre l'azione: senza fondo pieno si vedrebbe il rosso
+   in trasparenza a riga chiusa.
+   ========================================================================= */
+.swipe-row {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.swipe-action {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 104px;
+  border: 0;
+  border-radius: 0;
+  background: var(--stop);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.swipe-content {
+  position: relative;
+  background: var(--ink);
+  transform: translateX(0);
+  touch-action: pan-y;
+  /* Durante il gesto lo script scrive transition:none inline, che vince
+     sulla regola: la posizione la comanda il dito, non un'animazione. */
+  transition: transform 180ms ease;
+}
+
+.swipe-row.is-open .swipe-content {
+  transform: translateX(-104px);
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .swipe-content {
+    transition: none;
+  }
 }
