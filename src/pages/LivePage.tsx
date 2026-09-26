@@ -1,3 +1,4 @@
+import { signal } from '@preact/signals';
 import { useEffect, useState } from 'preact/hooks';
 import { Sheet } from '../components/Sheet';
 import { navigate } from '../router';
@@ -28,13 +29,27 @@ import {
   undoSet,
 } from '../stores/session';
 
+// «Torna alle serie» quando sono tutte chiuse: senza questo il riepilogo si
+// ripresenta subito, perché è proprio l'essere finite ad aprirlo. Sta fuori dal
+// componente (id della sessione) così resiste al cambio di tab.
+const keepTrainingId = signal<string | null>(null);
+
 export function LivePage() {
   const session = active.value;
   const [confirmExit, setConfirmExit] = useState(false);
   const [summary, setSummary] = useState(false);
+  const keepTraining = session != null && keepTrainingId.value === session.id;
+
+  const done = session ? countDoneSets(session) : 0;
+  const planned = session ? countPlannedSets(session) : 0;
+  const allDone = session != null && done >= planned;
 
   // iOS rilascia il Wake Lock quando esci dall'app: lo si riprende al rientro.
   useEffect(() => watchVisibility(() => active.value !== null), []);
+  // Riaperta una serie, il riepilogo torna automatico alla fine.
+  useEffect(() => {
+    if (!allDone) keepTrainingId.value = null;
+  }, [allDone]);
 
   if (!session) {
     return (
@@ -50,13 +65,18 @@ export function LivePage() {
     );
   }
 
-  const done = countDoneSets(session);
-  const planned = countPlannedSets(session);
-  const allDone = done >= planned;
   const elapsed = now.value - session.startedAt;
 
-  if (summary || allDone) {
-    return <FinishView session={session} onBack={() => setSummary(false)} />;
+  if (summary || (allDone && !keepTraining)) {
+    return (
+      <FinishView
+        session={session}
+        onBack={() => {
+          setSummary(false);
+          keepTrainingId.value = session.id;
+        }}
+      />
+    );
   }
 
   const entry = session.entries[currentIndex.value];
