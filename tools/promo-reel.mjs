@@ -102,7 +102,7 @@ const SENZA_MEDIA = process.argv.includes('--senza-media');
  * un'app che invece le animazioni ce le ha. Qui si usa lo stesso indirizzo del
  * deploy, quello in .github/workflows/deploy.yml.
  */
-const MEDIA = arg('media', 'https://mariodraghi777.github.io/the-beest-media');
+const MEDIA = arg('media', 'https://firststone777.github.io/the-beest-media');
 
 /*
  * Area che Instagram si riprende con la propria interfaccia: la fascia in
