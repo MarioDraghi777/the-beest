@@ -237,6 +237,13 @@ h3 {
   background: var(--nectar);
 }
 
+/* Senza, un tasto disattivato resta identico agli altri e sembra rotto. */
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .btn-ghost {
   background: transparent;
   color: var(--wax);

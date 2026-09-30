@@ -65,16 +65,24 @@ export function PlanPage() {
             Da lì l'app genera tutte le sedute a calendario e il favo dell'anno.
           </p>
         </div>
-        <button class="btn" type="button" onClick={() => setCreating(true)} disabled={workouts.value.length === 0}>
-          Crea il piano
-        </button>
-        {workouts.value.length === 0 && (
-          <p class="sub" style={{ textAlign: 'center' }}>
-            Prima però serve almeno una scheda.{' '}
-            <button class="linkish" type="button" onClick={() => navigate('schede')}>
-              Vai alle schede
+        {workouts.value.length > 0 ? (
+          <button class="btn" type="button" onClick={() => setCreating(true)}>
+            Crea il piano
+          </button>
+        ) : (
+          // Senza schede il piano non ha niente da mettere in calendario: invece
+          // di un tasto spento, si porta dritti a crearne o importarne una.
+          <>
+            <p class="sub" style={{ textAlign: 'center' }}>
+              Per creare un piano serve almeno una scheda.
+            </p>
+            <button class="btn" type="button" onClick={() => navigate('schede')}>
+              Crea una scheda
             </button>
-          </p>
+            <button class="btn btn-ghost" type="button" onClick={() => navigate('importa')}>
+              Importa scheda o piano
+            </button>
+          </>
         )}
         {creating && <PlanWizard onClose={() => setCreating(false)} />}
       </main>
